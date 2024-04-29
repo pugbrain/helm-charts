@@ -3,7 +3,7 @@ name: Release Charts
 on:
   push:
     branches:
-      - gh-workflow
+      - main
   workflow_dispatch:
 
 jobs:

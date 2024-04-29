@@ -1,0 +1,23 @@
+apiVersion: v2
+name: geonetwork
+version: 0.1.0
+description: |-
+  GeoNetwork is a catalog application to manage spatially referenced resources. 
+  It provides powerful metadata editing and search functions as well as an interactive web map viewer. 
+  It is currently used in numerous Spatial Data Infrastructure initiatives across the world
+type: application
+keywords:
+  - GIS
+  - FOSS4G
+  - catalog
+  - CSW
+  - metadata
+home: https://geonetwork-opensource.org/
+sources:
+  - https://github.com/geonetwork/core-geonetwork
+  - https://github.com/nds-cprm/geonetwork-oci
+maintainers:
+  - name: Carlos Eduardo Mota
+    email: carlos.mota@sgb.gov.br
+icon: "https://geonetwork-opensource.org/_static/chrome/geonetwork3-logo.png"
+appVersion: "3.10.2"

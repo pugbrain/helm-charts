@@ -1,0 +1,10 @@
+{{- if .Values.uwsgi.overwrite -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mapproxy.fullname" . }}-configmap
+  labels:
+    {{- include "mapproxy.labels" . | nindent 4 }}
+data:
+  uwsgi.conf: {{ .Values.uwsgi.conf | toYaml | indent 2 }} 
+{{- end }}

@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mapproxy.fullname" . }}
+  labels:
+    {{- include "mapproxy.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "mapproxy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mapproxy.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mapproxy.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        {{- if .Values.pvc.enabled }}
+        - name: mapproxy-data
+          persistentVolumeClaim:
+            claimName: {{ include "mapproxy.fullname" . }}-pvc
+        {{- end }}
+        {{- if .Values.uwsgi.overwrite }}
+        - name: mapproxy-uwsgi-conf
+          configMap:
+            name: {{ include "mapproxy.fullname" . }}-configmap
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-app
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MAPPROXY_CONFIG_DIR
+              value: {{ .Values.configDir }}
+          volumeMounts:
+            {{- if .Values.pvc.enabled }}
+            - name: mapproxy-data
+              mountPath: {{ .Values.configDir }}
+            {{- end }}
+            {{- if .Values.uwsgi.overwrite }}
+            - name: mapproxy-uwsgi-conf
+              mountPath: /var/lib/uwsgi
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /usr/bin/pidof
+                - "-xsq"
+                - start.sh
+          readinessProbe:
+            tcpSocket:
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

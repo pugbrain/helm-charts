@@ -1,0 +1,23 @@
+apiVersion: v2
+name: mapproxy
+version: 0.1.0
+description: |-
+  MapProxy is an open source proxy for geospatial data. 
+  It caches, accelerates and transforms data from existing map services and serves any desktop or web GIS client.
+type: application
+keywords:
+  - GIS
+  - FOSS4G
+  - webmap
+  - WMS
+  - WMTS
+  - Tiles
+home: https://www.mapproxy.org/
+sources: 
+  - https://github.com/mapproxy/mapproxy
+  - https://github.com/nds-cprm/mapproxy-oci
+maintainers:
+  - name: Carlos Eduardo Mota
+    email: carlos.mota@sgb.gov.br
+icon: https://www.mapproxy.org/img/mapproxy-logo.png
+appVersion: "2.0.2"

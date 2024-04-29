@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "geoserver.fullname" . }}
+  labels:
+    {{- include "geoserver.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "geoserver.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "geoserver.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "geoserver.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        {{- if .Values.pvc.enabled }}
+        - name: geoserver-data
+          persistentVolumeClaim:
+            claimName: {{ include "geoserver.fullname" . }}-pvc
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: tcp-{{ .Values.service.port }}
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            {{- $firstHost := first .Values.ingress.hosts -}}
+            {{- $firstPath := (first $firstHost.paths).path }}
+            # TODO: Adicionar suporte a TLS, para selecionar http ou https
+            - name: PROXY_BASE_URL
+              value: {{ .Values.config.proxyBaseURL | default (cat "http://" $firstHost.host $firstPath | replace " " "") }}        
+            {{- if .Values.pvc.enabled }}
+            - name: GEOSERVER_DATA_DIR
+              value: {{ .Values.pvc.storage.mountPath }}
+            {{- end }}
+            - name: GEOSERVER_CONSOLE_DISABLED
+              value: {{ .Values.config.console.disabled | toString | lower | quote  }} 
+            - name: GEOSERVER_CSRF_DISABLED
+              value: {{ .Values.config.csrf.disabled | toString  | lower | quote  }}  
+            {{- if not (empty .Values.config.csrf.whitelist) }}
+            - name: GEOSERVER_CSRF_WHITELIST
+              value: {{ join "," .Values.config.csrf.whitelist }}
+            {{- end }}
+            - name: GEOSERVER_DISABLE_MARLIN
+              value: {{ .Values.config.marlinRenderer.disabled | toString | lower | quote  }} 
+            {{- if .Values.config.appSchema.propertiesFile }}
+            - name: GEOSERVER_APPSCHEMA_PROPERTIES_FILE
+              value: {{ .Values.config.appSchema.propertiesFile }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.pvc.enabled }}
+            - mountPath: {{ .Values.pvc.storage.mountPath }}
+              name: geoserver-data
+            {{- end }}
+          livenessProbe:
+            tcpSocket:
+              port: tcp-{{ .Values.service.port }}
+          readinessProbe:
+            httpGet:
+              path: /geoserver
+              port: tcp-{{ .Values.service.port }}
+            initialDelaySeconds: 30
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

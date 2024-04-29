@@ -1,0 +1,39 @@
+
+{{- if .Values.pvc.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "mapproxy.fullname" . }}-cronjob
+  labels:
+    {{- include "mapproxy.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.seed.schedule | quote }}
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 120
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: mapproxy-seed 
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              args:
+                - /bin/bash
+                - '-c'
+                - >-
+                  source venv/bin/activate && mapproxy-seed -f config/mapproxy.yaml
+                  -s config/seed.yaml -c {{ .Values.seed.jobs | toString }}
+              env:
+                - name: MAPPROXY_CONFIG_DIR
+                  value: {{ .Values.configDir }}
+              volumeMounts:
+                - mountPath: {{ .Values.configDir }}
+                  name: mapproxy-data
+          volumes:
+            - name: mapproxy-data
+              persistentVolumeClaim:
+                claimName: {{ include "mapproxy.fullname" . }}-pvc
+          restartPolicy: OnFailure
+{{- end }}

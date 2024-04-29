@@ -1,0 +1,144 @@
+# Default values for mapproxy.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: docker.io/ndscprm/mapproxy
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: mapproxy.apps-crc.testing
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: '1'
+  #   memory: 2Gi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+pvc:
+  enabled: false
+  storage: 
+    className: ""
+    size: 100Mi
+
+# Mapproxy-Specific
+configDir: /var/lib/mapproxy/config
+seed:
+  enabled: false
+  schedule: "@monthly"
+  jobs: 1
+uwsgi:
+  overwrite: false
+  conf: |-
+    [uwsgi]
+    # uwsgi.conf as configMap
+    # https://www.bloomberg.com/company/stories/configuring-uwsgi-production-deployment/
+    strict = true
+    master = true
+    enable-threads = true
+    chdir = /var/lib/mapproxy
+    wsgi-file = /var/lib/mapproxy/app.py
+    pidfile=/tmp/mapproxy.pid
+    socket = 0.0.0.0:8000
+    chmod-socket = 777
+
+    vacuum = true 
+    single-interpreter = true
+    die-on-term = true
+    need-app = true
+
+    disable-logging = true
+    log-4xx = true
+    log-5xx = true
+
+    harakiri = 60                        ; forcefully kill workers after 60 seconds
+    # py-callos-afterfork = true           ; allow workers to trap signals
+
+    auto-procname = true
+    procname-prefix = "mapproxy "
+
+    max-requests = 1000                  ; Restart workers after this many requests
+    max-worker-lifetime = 3600           ; Restart workers after this many seconds
+    reload-on-rss = 2048                 ; Restart workers after this much resident memory
+    worker-reload-mercy = 60 
+
+    cheaper-algo = busyness              
+    processes = 500                      ; Maximum number of workers allowed
+    cheaper = 8                          ; Minimum number of workers allowed
+    cheaper-initial = 16                 ; Workers created at startup
+    cheaper-overload = 1                 ; Length of a cycle in seconds
+    cheaper-step = 16                    ; How many workers to spawn at a time
+
+    cheaper-busyness-multiplier = 30     ; How many cycles to wait before killing workers
+    cheaper-busyness-min = 20            ; Below this threshold, kill workers (if stable for multiplier cycles)
+    cheaper-busyness-max = 70            ; Above this threshold, spawn new workers
+    cheaper-busyness-backlog-alert = 16  ; Spawn emergency workers if more than this many requests are waiting in the queue
+    cheaper-busyness-backlog-step = 2    ; How many emergegency workers to create if there are too many requests in the queue
+
+

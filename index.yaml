@@ -1,0 +1,117 @@
+apiVersion: v1
+entries:
+  geonetwork:
+  - apiVersion: v2
+    appVersion: 3.10.2
+    created: "2024-04-29T22:31:56.380254136Z"
+    description: GeoNetwork is a catalog application to manage spatially referenced
+      resources.  It provides powerful metadata editing and search functions as well
+      as an interactive web map viewer.  It is currently used in numerous Spatial
+      Data Infrastructure initiatives across the world
+    digest: fb84555e2458155ee2e354c6ed9bd43378ecd7de09a114b171341b7e5decafca
+    home: https://geonetwork-opensource.org/
+    icon: https://geonetwork-opensource.org/_static/chrome/geonetwork3-logo.png
+    keywords:
+    - GIS
+    - FOSS4G
+    - catalog
+    - CSW
+    - metadata
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+    name: geonetwork
+    sources:
+    - https://github.com/geonetwork/core-geonetwork
+    - https://github.com/nds-cprm/geonetwork-oci
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/geonetwork-0.1.0/geonetwork-0.1.0.tgz
+    version: 0.1.0
+  geoserver:
+  - apiVersion: v2
+    appVersion: 2.24.2
+    created: "2024-04-29T22:31:56.56897417Z"
+    description: GeoServer is an open source server for sharing geospatial data.  Designed
+      for interoperability, it publishes data from any major spatial data source using
+      open standards
+    digest: f4b462ca1485e43290d54304fd5e40a0e52c7d6208bfcaa3e68dfabd16f85d5c
+    home: https://geoserver.org/
+    icon: https://geoserver.org/img/geoserver-logo.png
+    keywords:
+    - GIS
+    - FOSS4G
+    - webmap
+    - WMS
+    - WFS
+    - WCS
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+    name: geoserver
+    sources:
+    - https://github.com/geoserver/geoserver
+    - https://github.com/nds-cprm/geoserver-oci
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/geoserver-0.1.0/geoserver-0.1.0.tgz
+    version: 0.1.0
+  mapproxy:
+  - apiVersion: v2
+    appVersion: 2.0.2
+    created: "2024-04-29T22:31:56.772820702Z"
+    description: MapProxy is an open source proxy for geospatial data.  It caches,
+      accelerates and transforms data from existing map services and serves any desktop
+      or web GIS client.
+    digest: 35c8b7e340351482ab758264e464376c6703cd21c29b07f4b8797db6be8b5cb3
+    home: https://www.mapproxy.org/
+    icon: https://www.mapproxy.org/img/mapproxy-logo.png
+    keywords:
+    - GIS
+    - FOSS4G
+    - webmap
+    - WMS
+    - WMTS
+    - Tiles
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+    name: mapproxy
+    sources:
+    - https://github.com/mapproxy/mapproxy
+    - https://github.com/nds-cprm/mapproxy-oci
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/mapproxy-0.1.0/mapproxy-0.1.0.tgz
+    version: 0.1.0
+  mapserver:
+  - apiVersion: v2
+    appVersion: 7.6.5
+    created: "2024-04-29T22:31:56.942147849Z"
+    description: MapServer is an Open Source platform for publishing spatial data
+      and interactive mapping applications to the web.  Originally developed in the
+      mid-1990’s at the University of Minnesota, MapServer is released under an MIT-style  license,
+      and runs on all major platforms (Windows, Linux, Mac OS X). MapServer is not
+      a full-featured GIS system,  nor does it aspire to be.
+    digest: b37072e8a7b9ec527c1e2c270c71ebe84ce7815eed6f3791f2441b4ca58b43f2
+    home: https://mapserver.org/
+    icon: https://mapserver.org/_static/banner.png
+    keywords:
+    - GIS
+    - FOSS4G
+    - webmap
+    - WMS
+    - WFS
+    - WCS
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+    name: mapserver
+    sources:
+    - https://github.com/MapServer/MapServer
+    - https://github.com/nds-cprm/mapserver-oci
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/mapserver-0.1.0/mapserver-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-04-29T22:31:56.942157086Z"

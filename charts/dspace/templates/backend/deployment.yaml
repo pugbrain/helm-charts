@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dspace.fullname" . }}-backend
+  labels:
+    {{- include "dspace.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  {{- if not .Values.backend.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "dspace.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      {{- with .Values.backend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dspace.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+    spec:
+      {{- with .Values.backend.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "dspace.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+      volumes:
+        {{- if .Values.backend.pvc.enabled }}
+        - name: dspace-data
+          persistentVolumeClaim:
+            claimName: {{ include "dspace.fullname" . }}-backend-pvc
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-backend
+          securityContext:
+            {{- toYaml .Values.backend.securityContext | nindent 12 }}
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}-test"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - name: backend-port
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: dspace__P__dir
+              value: {{ .Values.backend.config.name }}
+            - name: dspace__P__server__P__url
+              value: {{ .Values.backend.config.urls.server }}
+            - name: dspace__P__ui__P__url
+              value: {{ .Values.backend.config.urls.ui }}
+            - name: dspace__P__name
+              value: DSpace Started with Helm
+            - name: db__P__url
+              value: {{ .Values.backend.config.urls.db }}
+            - name: solr__P__server
+              value: http://{{ include "dspace.fullname" . }}-solr:8983/solr
+            - name: proxies__P__trusted__P__ipranges
+              value:  {{ .Values.backend.config.proxiesTrustedIPRanges }}
+          volumeMounts:
+            {{- if .Values.backend.pvc.enabled }}
+            - mountPath: /dspace/assetstore
+              name: dspace-data
+            {{- end }}
+          # TODO: review this
+          {{/*livenessProbe:
+            httpGet:
+              path: /
+              port: backend-port
+          readinessProbe:
+            httpGet:
+              path: /
+              port: backend-port*/}}
+          # TODO: Move commands before exec tomcat to initContainers
+          command: ["/bin/bash"]
+          args:
+            - '-c'
+            - |
+              /dspace/bin/dspace database migrate
+              catalina.sh run
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+      {{- with .Values.backend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

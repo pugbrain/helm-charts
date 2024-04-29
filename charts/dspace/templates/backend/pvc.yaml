@@ -1,0 +1,21 @@
+{{- if .Values.backend.pvc.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "dspace.fullname" . }}-backend-pvc
+  labels:
+    {{- include "dspace.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  {{- with .Values.backend.pvc }}
+  {{- if .className }}
+  storageClassName: {{ .className }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size }}
+  {{- end }}
+{{- end }}

@@ -66,15 +66,13 @@ spec:
             - mountPath: /dspace/assetstore
               name: dspace-data
             {{- end }}
-          # TODO: review this
-          {{/*livenessProbe:
-            httpGet:
-              path: /
+          livenessProbe:
+            tcpSocket:
               port: backend-port
           readinessProbe:
             httpGet:
               path: /
-              port: backend-port*/}}
+              port: backend-port
           # TODO: Move commands before exec tomcat to initContainers
           command: ["/bin/bash"]
           args:

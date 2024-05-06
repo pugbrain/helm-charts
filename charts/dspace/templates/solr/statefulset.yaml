@@ -18,7 +18,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: dspace-solr
-          image: "{{ .Values.solr.image.repository }}:{{ .Values.solr.image.tag }}"
+          image: "{{ .Values.solr.image.repository }}:{{ .Values.solr.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.solr.image.pullPolicy }}
           workingDir: /var/solr/data
           ports:

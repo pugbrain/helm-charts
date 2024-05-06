@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: docker.io/nginxinc/nginx-unprivileged
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "1.25.5-alpine"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -16,7 +16,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: false
+  create: true
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -38,7 +38,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ingress:
   enabled: false
@@ -71,7 +71,7 @@ resources: {}
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 3
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
@@ -81,12 +81,23 @@ tolerations: []
 
 affinity: {}
 
+db:
+  image:
+    repository: dspace/dspace-postgres-pgcrypto
+    pullPolicy: IfNotPresent
+    tag: ""
+  pvc:
+    # className: ""
+    size: 5Gi
+    mountPoint: /pgdata
+  securityContext:
+    runAsUser: 0
 
 solr:
   image:
     repository: docker.io/dspace/dspace-solr
     pullPolicy: IfNotPresent
-    tag: "dspace-7_x"
+    tag: ""
   pvc:
     # className: ""
     size: 1Gi
@@ -96,16 +107,16 @@ backend:
     name: 'DSpace Started with Helm'
     dir: /dspace
     urls:
-      server: http://dspace.apps-crc.testing/server
-      ui: http://localhost:4000
-      db: 'jdbc:postgresql://host:5432/database'
+      server: http://sgb-rigeo-teste.apps-crc.testing/server
+      ui: http://sgb-rigeo-teste.apps-crc.testing
+      db: 'jdbc:postgresql://rigeo-dspace-db:5432/dspace'
     # solr-server: 
-    proxiesTrustedIPRanges: '172.23.0'
+    # proxiesTrustedIPRanges: '172.23.0'
   replicaCount: 1
   autoscaling:
     enabled: false
     minReplicas: 1
-    maxReplicas: 5
+    maxReplicas: 3
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
   podAnnotations: {}
@@ -117,13 +128,13 @@ backend:
     tag: ""
   podSecurityContext: {}
     # fsGroup: 2000
-  securityContext: {}
+  securityContext: 
     # capabilities:
     #   drop:
     #   - ALL
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
-    # runAsUser: 1000
+    runAsUser: 0
   resources: {}
     # limits:
     #   cpu: 100m
@@ -139,3 +150,49 @@ backend:
     # className: ""
     size: 1Gi
     # mountPoint: /dados/rigeo
+
+frontend:
+  config:
+    ui:
+      host: "0.0.0.0"
+      port: 4000
+      namespace: "/"
+      ssl: false
+    rest:
+      host: sgb-rigeo-teste.apps-crc.testing
+      port: 80
+      namespace: "/server"
+      ssl: false
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  podAnnotations: {}
+  imagePullSecrets: []
+  image:
+    repository: docker.io/dspace/dspace-angular
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+  podSecurityContext: {}
+    # fsGroup: 2000
+  securityContext: 
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    runAsUser: 0
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

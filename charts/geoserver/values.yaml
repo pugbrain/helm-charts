@@ -102,14 +102,18 @@ tolerations: []
 affinity: {}
 
 config:
-    proxyBaseURL: ""
-    console:
-      disabled: false 
-    csrf: 
-      disabled: false
-      whitelist: []
-    marlinRenderer: 
-      disabled: false
-    appSchema:
-      propertiesFile: "" 
+  jvm:
+    JAVA_OPTS: ""
+    CATALINA_OPTS: ""
+    GEOSERVER_OPTS: ""
+  proxyBaseURL: ""
+  console:
+    disabled: false 
+  csrf: 
+    disabled: false
+    whitelist: []
+  marlinRenderer: 
+    disabled: false
+  appSchema:
+    propertiesFile: "" 
 

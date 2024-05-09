@@ -49,9 +49,23 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
+            {{- with .Values.config.jvm }}            
+            {{- if .JAVA_OPTS }}
+            - name: JAVA_OPTS
+              value: {{ .JAVA_OPTS | quote }}
+            {{- end }}
+            {{- if .CATALINA_OPTS }}
+            - name: CATALINA_OPTS
+              value: {{ .CATALINA_OPTS | quote }}
+            {{- end }}
+            {{- if .GEOSERVER_OPTS }}
+            - name: GEOSERVER_OPTS
+              value: {{ .GEOSERVER_OPTS | quote }}
+            {{- end }}
+            {{- end }}
+            # TODO: Adicionar suporte a TLS, para selecionar http ou https
             {{- $firstHost := first .Values.ingress.hosts -}}
             {{- $firstPath := (first $firstHost.paths).path }}
-            # TODO: Adicionar suporte a TLS, para selecionar http ou https
             - name: PROXY_BASE_URL
               value: {{ .Values.config.proxyBaseURL | default (cat "http://" $firstHost.host $firstPath | replace " " "") }}        
             {{- if .Values.pvc.data.enabled }}

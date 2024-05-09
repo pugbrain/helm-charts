@@ -1,19 +1,6 @@
 # Default values for dspace.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-replicaCount: 1
-
-image:
-  repository: docker.io/nginxinc/nginx-unprivileged
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.25.5-alpine"
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -23,63 +10,23 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 8080
-
 ingress:
-  enabled: false
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: dspace.apps-crc.testing
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+  frontend:
+    host: dspace.apps-crc.testing
+    path: /
+    pathType: ImplementationSpecific
+  backend:
+    host: dspace.apps-crc.testing
+    path: /server
+    pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 3
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
 
 db:
   image:
@@ -106,10 +53,10 @@ backend:
   config:
     name: 'DSpace Started with Helm'
     dir: /dspace
-    urls:
-      server: http://sgb-rigeo-teste.apps-crc.testing/server
-      ui: http://sgb-rigeo-teste.apps-crc.testing
-      db: 'jdbc:postgresql://rigeo-dspace-db:5432/dspace'
+    # urls:
+    #  server: http://sgb-rigeo-teste.apps-crc.testing/server
+    #  ui: http://sgb-rigeo-teste.apps-crc.testing
+    db: 'jdbc:postgresql://rigeo-dspace-db:5432/dspace'
     # solr-server: 
     # proxiesTrustedIPRanges: '172.23.0'
   replicaCount: 1
@@ -152,17 +99,6 @@ backend:
     # mountPoint: /dados/rigeo
 
 frontend:
-  config:
-    ui:
-      host: "0.0.0.0"
-      port: 4000
-      namespace: "/"
-      ssl: false
-    rest:
-      host: sgb-rigeo-teste.apps-crc.testing
-      port: 80
-      namespace: "/server"
-      ssl: false
   replicaCount: 1
   autoscaling:
     enabled: false

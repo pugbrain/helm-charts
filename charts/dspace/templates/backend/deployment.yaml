@@ -40,7 +40,7 @@ spec:
         - name: {{ .Chart.Name }}-backend
           securityContext:
             {{- toYaml .Values.backend.securityContext | nindent 12 }}
-          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}-test"
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           ports:
             - name: backend-port
@@ -50,17 +50,19 @@ spec:
             - name: dspace__P__dir
               value: {{ .Values.backend.config.name }}
             - name: dspace__P__server__P__url
-              value: {{ .Values.backend.config.urls.server }}
+              value: {{ printf "http://%s%s" .Values.ingress.backend.host .Values.ingress.backend.path }}
             - name: dspace__P__ui__P__url
-              value: {{ .Values.backend.config.urls.ui }}
+              value: {{ printf "http://%s%s" .Values.ingress.frontend.host .Values.ingress.frontend.path }}
             - name: dspace__P__name
-              value: DSpace Started with Helm
+              value: {{ .Values.backend.config.name }}
             - name: db__P__url
-              value: {{ .Values.backend.config.urls.db }}
+              value: {{ .Values.backend.config.db }}
             - name: solr__P__server
               value: http://{{ include "dspace.fullname" . }}-solr:8983/solr
-            - name: proxies__P__trusted__P__ipranges
-              value:  {{ .Values.backend.config.proxiesTrustedIPRanges }}
+            # - name: proxies__P__trusted__P__ipranges
+            #   value:  {{ .Values.backend.config.proxiesTrustedIPRanges }}
+            - name: CATALINA_OPTS
+              value: "-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
           volumeMounts:
             {{- if .Values.backend.pvc.enabled }}
             - mountPath: /dspace/assetstore
@@ -69,9 +71,10 @@ spec:
           livenessProbe:
             tcpSocket:
               port: backend-port
+          # https://wiki.lyrasis.org/pages/viewpage.action?pageId=289079751
           readinessProbe:
             httpGet:
-              path: /
+              path: /server/api/core/sites
               port: backend-port
           # TODO: Move commands before exec tomcat to initContainers
           command: ["/bin/bash"]

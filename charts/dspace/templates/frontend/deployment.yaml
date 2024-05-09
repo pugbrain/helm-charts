@@ -41,24 +41,22 @@ spec:
               containerPort: 4000
               protocol: TCP
           env:
-            {{- with .Values.frontend.config }}
             - name: DSPACE_UI_SSL
-              value: {{ .ui.ssl | default false | toString | quote }}
+              value: "false"
             - name: DSPACE_UI_HOST
-              value: {{ .ui.host | default  }}
+              value: "0.0.0.0"
             - name: DSPACE_UI_PORT
-              value: {{ .ui.port | default 4000 | toString | quote }}
+              value: "4000"
             - name: DSPACE_UI_NAMESPACE
-              value: {{ .ui.namespace | default "/" }}
+              value: "/"
             - name: DSPACE_REST_SSL
-              value: {{ .rest.ssl | default false | toString | quote }}
+              value: "false"
             - name: DSPACE_REST_HOST
-              value: {{ .rest.host }}
+              value: {{ .Values.ingress.backend.host }}
             - name: DSPACE_REST_PORT
-              value:  {{ .rest.port | default 443 | toString | quote }}
+              value: "80"
             - name: DSPACE_REST_NAMESPACE
-              value:  {{ .rest.namespace | default "/server" }}
-            {{- end }}
+              value:  {{ .Values.ingress.backend.path }}
           livenessProbe:
             tcpSocket:
               port: frontend-port

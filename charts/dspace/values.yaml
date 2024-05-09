@@ -29,6 +29,7 @@ ingress:
   #      - chart-example.local
 
 db:
+  enabled: true
   image:
     repository: dspace/dspace-postgres-pgcrypto
     pullPolicy: IfNotPresent
@@ -41,6 +42,7 @@ db:
     runAsUser: 0
 
 solr:
+  enabled: true
   image:
     repository: docker.io/dspace/dspace-solr
     pullPolicy: IfNotPresent

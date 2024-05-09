@@ -47,21 +47,33 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
+    - host: geoserver.apps-crc.testing
       paths:
         - path: /geoserver
           pathType: ImplementationSpecific
   tls: []
-    # - secretName: chart-example-tls
+    # - secretName: geoserver.apps-crc.testing
     #   hosts:
     #     - chart-example.local
 
 pvc:
-  enabled: false
-  storage: 
-    className: ""
-    size: 100Mi
-    mountPath: /srv/geoserver/data
+  data:
+    enabled: false
+    storage: 
+      className: ""
+      size: 5Gi
+      mountPath: /srv/geoserver/data
+      accessModes:
+        - ReadWriteOnce
+  gwc:
+    enabled: false
+    storage: 
+      className: ""
+      size: 5Gi
+      mountPath: /srv/geoserver/gwc
+      accessModes:
+        - ReadWriteOnce
+        - ReadOnlyMany
 
 
 resources: {}
@@ -98,9 +110,6 @@ config:
       whitelist: []
     marlinRenderer: 
       disabled: false
-    # TODO: PVC for geowebcache
-    # geoWebCache: # GEOWEBCACHE_CACHE_DIR
-    #   cacheDir: ""
     appSchema:
       propertiesFile: "" 
 

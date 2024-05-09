@@ -1,0 +1,22 @@
+{{- if .Values.pvc.gwc.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "geoserver.fullname" . }}-gwc-pvc
+  labels:
+    {{- include "geoserver.labels" . | nindent 4 }}
+spec:
+  {{- with .Values.pvc.gwc.storage }}
+  accessModes:
+    {{- range .accessModes }}
+    - {{ . }}
+    {{- end }}
+  volumeMode: Filesystem
+  {{- if .className }}
+  storageClassName: {{ .className }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size }}
+  {{- end }}
+{{- end }}

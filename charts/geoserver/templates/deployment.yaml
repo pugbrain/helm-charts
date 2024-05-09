@@ -28,10 +28,15 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
-        {{- if .Values.pvc.enabled }}
+        {{- if .Values.pvc.data.enabled }}
         - name: geoserver-data
           persistentVolumeClaim:
-            claimName: {{ include "geoserver.fullname" . }}-pvc
+            claimName: {{ include "geoserver.fullname" . }}-data-pvc
+        {{- end }}
+        {{- if .Values.pvc.gwc.enabled }}
+        - name: geoserver-gwc
+          persistentVolumeClaim:
+            claimName: {{ include "geoserver.fullname" . }}-gwc-pvc
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -49,9 +54,13 @@ spec:
             # TODO: Adicionar suporte a TLS, para selecionar http ou https
             - name: PROXY_BASE_URL
               value: {{ .Values.config.proxyBaseURL | default (cat "http://" $firstHost.host $firstPath | replace " " "") }}        
-            {{- if .Values.pvc.enabled }}
+            {{- if .Values.pvc.data.enabled }}
             - name: GEOSERVER_DATA_DIR
-              value: {{ .Values.pvc.storage.mountPath }}
+              value: {{ .Values.pvc.data.storage.mountPath }}
+            {{- end }}
+            {{- if .Values.pvc.gwc.enabled }}
+            - name: GEOWEBCACHE_CACHE_DIR
+              value: {{ .Values.pvc.gwc.storage.mountPath }}
             {{- end }}
             - name: GEOSERVER_CONSOLE_DISABLED
               value: {{ .Values.config.console.disabled | toString | lower | quote  }} 
@@ -68,9 +77,13 @@ spec:
               value: {{ .Values.config.appSchema.propertiesFile }}
             {{- end }}
           volumeMounts:
-            {{- if .Values.pvc.enabled }}
-            - mountPath: {{ .Values.pvc.storage.mountPath }}
+            {{- if .Values.pvc.data.enabled }}
+            - mountPath: {{ .Values.pvc.data.storage.mountPath }}
               name: geoserver-data
+            {{- end }}
+            {{- if .Values.pvc.gwc.enabled }}
+            - mountPath: {{ .Values.pvc.gwc.storage.mountPath }}
+              name: geoserver-gwc
             {{- end }}
           livenessProbe:
             tcpSocket:

@@ -1,15 +1,17 @@
-{{- if .Values.pvc.enabled -}}
+{{- if .Values.pvc.data.enabled -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "geoserver.fullname" . }}-pvc
+  name: {{ include "geoserver.fullname" . }}-data-pvc
   labels:
     {{- include "geoserver.labels" . | nindent 4 }}
 spec:
+  {{- with .Values.pvc.data.storage }}
   accessModes:
-    - ReadWriteOnce
+    {{- range .accessModes }}
+    - {{ . }}
+    {{- end }}
   volumeMode: Filesystem
-  {{- with .Values.pvc.storage }}
   {{- if .className }}
   storageClassName: {{ .className }}
   {{- end }}

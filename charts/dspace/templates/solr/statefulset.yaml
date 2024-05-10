@@ -26,14 +26,14 @@ spec:
             - containerPort: 8983
               name: solr-port
           volumeMounts:
-            - name: {{ include "dspace.fullname" . }}-solr-pvc
+            - name: {{ include "dspace.fullname" . }}-solr
               mountPath: /var/solr/data
           command: ["/bin/bash"]
           args: ['-c', 'init-var-solr; precreate-core authority /opt/solr/server/solr/configsets/authority; cp -r /opt/solr/server/solr/configsets/authority/* authority; precreate-core oai /opt/solr/server/solr/configsets/oai; cp -r /opt/solr/server/solr/configsets/oai/* oai; precreate-core search /opt/solr/server/solr/configsets/search; cp -r /opt/solr/server/solr/configsets/search/* search; precreate-core statistics /opt/solr/server/solr/configsets/statistics; cp -r /opt/solr/server/solr/configsets/statistics/* statistics; exec solr -f']
 
   volumeClaimTemplates:
     - metadata:
-        name: {{ include "dspace.fullname" . }}-solr-pvc
+        name: {{ include "dspace.fullname" . }}-solr
       spec:
         accessModes:
           - ReadWriteOnce

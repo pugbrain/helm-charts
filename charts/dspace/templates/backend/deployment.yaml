@@ -34,7 +34,7 @@ spec:
         {{- if .Values.backend.pvc.enabled }}
         - name: dspace-data
           persistentVolumeClaim:
-            claimName: {{ include "dspace.fullname" . }}-backend-pvc
+            claimName: {{ include "dspace.fullname" . }}-backend
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}-backend
@@ -56,7 +56,11 @@ spec:
             - name: dspace__P__name
               value: {{ .Values.backend.config.name }}
             - name: db__P__url
-              value: {{ .Values.backend.config.db }}
+              value: {{ .Values.backend.config.db.url }}
+            - name: db__P__username
+              value: {{ .Values.backend.config.db.username }}
+            - name: db__P__password
+              value: {{ .Values.backend.config.db.password }}
             - name: solr__P__server
               value: http://{{ include "dspace.fullname" . }}-solr:8983/solr
             # - name: proxies__P__trusted__P__ipranges

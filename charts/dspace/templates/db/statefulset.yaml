@@ -28,16 +28,16 @@ spec:
             - containerPort: 5432
               name: db-port
           volumeMounts:
-            - name: {{ include "dspace.fullname" . }}-db-pvc
-              mountPath: {{ .Values.db.pvc.mountPoint }}
+            - name: {{ include "dspace.fullname" . }}-db
+              mountPath: /postgres
           env:
             - name: PGDATA
-              value: {{ .Values.db.pvc.mountPoint }}
+              value: /data
             - name: POSTGRES_PASSWORD
               value: dspace
   volumeClaimTemplates:
     - metadata:
-        name: {{ include "dspace.fullname" . }}-db-pvc
+        name: {{ include "dspace.fullname" . }}-db
       spec:
         accessModes:
           - ReadWriteOnce

@@ -797,6 +797,10 @@ spec:
             #   name: nginx-confd
             #   readOnly: true
           {{- end }}
+      initContainers:
+        - name: wait-for-geoserevr
+          image: docker.io/library/busybox:latest
+          command: ['sh', '-c', "until wget --spider http://{{ .Values.services.geoserver.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.geoserver.servicePort | toString }}/geoserver ; do echo waiting for geoserver...; sleep 2; done"]
       serviceAccountName: {{ include "geonode.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.services.nginx.podSecurityContext | nindent 8 }}

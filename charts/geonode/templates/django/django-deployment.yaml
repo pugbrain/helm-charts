@@ -29,12 +29,16 @@ spec:
         {{- include "django.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - args:
+        - command:
+            - /usr/src/{{ .Values.configs.projectName }}/entrypoint.sh          
+          args:
             - uwsgi
-            - --ini
+            - "--ini"
+            {{- if .Values.services.django.uwsgi.override }}
+            - /var/run/uwsgi/uwsgi.ini
+            {{- else }}
             - /usr/src/{{ .Values.configs.projectName }}/uwsgi.ini
-          command:
-            - /usr/src/{{ .Values.configs.projectName }}/entrypoint.sh
+            {{- end }}          
           env:
             - name: ACCOUNT_APPROVAL_REQUIRED
               valueFrom:
@@ -812,9 +816,14 @@ spec:
               containerPort: 8000
               protocol: TCP
           resources:
-            {{- toYaml .Values.services.django.resources | nindent 12 }}
-          {{- with .Values.volumes }}
+            {{- toYaml .Values.services.django.resources | nindent 12 }}          
           volumeMounts:
+            {{- if .Values.services.django.uwsgi.override }}
+            - name: uwsgi
+              mountPath: /var/run/uwsgi
+              readOnly: true
+            {{- end }}
+            {{- with .Values.volumes }}
             - mountPath: {{ .statics.mountPath }}
               name: statics
             - mountPath: {{ .geoserverData.mountPath }}
@@ -825,7 +834,7 @@ spec:
               name: data
             - mountPath: {{ .tmp.mountPath }}
               name: tmp
-          {{- end }}
+            {{- end }}
       initContainers:
         # TODO: melhorar este script - talvez usar imagem do geonode com envs
         - name: wait-for-dbs
@@ -846,9 +855,14 @@ spec:
       {{- with .Values.services.django.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.volumes }}
+      {{- end }}      
       volumes:
+        {{- if .Values.services.django.uwsgi.override }}
+        - name: uwsgi
+          configMap:
+            name: {{ include "geonode.configmap" . }}-uwsgi
+        {{- end }}
+        {{- with .Values.volumes }}
         - name: statics
           persistentVolumeClaim:
             claimName: {{ .statics.name }}
@@ -864,5 +878,5 @@ spec:
         - name: tmp
           persistentVolumeClaim:
             claimName: {{ .tmp.name }}
-      {{- end }}
+        {{- end }}
 status: {}

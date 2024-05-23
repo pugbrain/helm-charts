@@ -33,7 +33,10 @@ ingress:
 
 # GeoNode Configs
 configs:
+  projectName: geonode
   domain: apps-crc.testing
+  languages: {}
+  languageCode: "en-us"
   debug: false
   forceReinit: false
   invokeLogStdout: true
@@ -250,7 +253,7 @@ services:
       repository: geonode/nginx
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "1.25.1"
+      tag: "1.25.3-v1"
 
     podAnnotations: {}
 
@@ -299,7 +302,7 @@ services:
       repository: geonode/geonode
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "latest-ubuntu-22.04"
+      tag: &geonodeTag "4.2.4"
 
     podAnnotations: {}
 
@@ -347,7 +350,7 @@ services:
       repository: geonode/geonode
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "latest-ubuntu-22.04"
+      tag: *geonodeTag
 
     podAnnotations: {}
 
@@ -397,7 +400,7 @@ services:
       dataRepository: geonode/geoserver_data
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
-      tag: "2.23.0"
+      tag: "2.24.2-v1"
 
     imagePullSecrets: []
     nameOverride: ""

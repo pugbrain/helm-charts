@@ -1,4 +1,7 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "geonode.configmap" . }}
 data:
   COMPOSE_PROJECT_NAME: geonode
   # See https://github.com/containers/podman/iss TIMEENAues/13889
@@ -15,10 +18,10 @@ data:
   INVOKE_LOG_STDOUT: {{ .Values.configs.invokeLogStdout | toString | title | quote }}
 
   # Django
-  # LANGUAGE_CODE: it-it
-  # LANGUAGES: (('en-us','English'),('it-it','Italiano'))
+  LANGUAGE_CODE: {{ .Values.configs.languageCode }}
+  LANGUAGES: (('en-us','English'),('es-es','Espanol'))
 
-  DJANGO_SETTINGS_MODULE: geonode.settings
+  DJANGO_SETTINGS_MODULE: {{ .Values.configs.projectName }}.settings
   GEONODE_INSTANCE_NAME: geonode # serviço (docker, k8s) onde está o NGINX
 
   # #################
@@ -297,7 +300,3 @@ data:
   RESTART_POLICY_DELAY: 5s
   RESTART_POLICY_MAX_ATTEMPTS: "3"
   RESTART_POLICY_WINDOW: 120s
-  
-kind: ConfigMap
-metadata:
-  name: {{ include "geonode.configmap" . }}

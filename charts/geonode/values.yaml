@@ -230,7 +230,7 @@ volumes:
   tmp:
     storage: 5Gi
     mountPath: /tmp
-    storageClassName: nutanix-dynfiles-retain
+    storageClassName: "" # Change
 
 # GeoNode Services
 services:

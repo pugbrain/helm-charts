@@ -2,10 +2,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -f ../geonode-stack.yml --controller deployment --provider kubernetes -c -o geonode
-    kompose.version: 1.28.0 (c4137012e)
-  creationTimestamp: null
   name: {{ .Values.services.memcached.name }}
   labels:
     {{- include "memcached.labels" . | nindent 4 }}
@@ -70,5 +66,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-status: {}
 {{- end }}

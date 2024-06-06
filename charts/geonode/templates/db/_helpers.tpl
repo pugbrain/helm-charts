@@ -25,5 +25,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 DB Service - hostname
 */}}
 {{- define "db.hostname" -}}
+{{- if .Values.services.db.external }}
+{{- .Values.secrets.postgres.host }}
+{{- else -}}
 {{- printf "%s.%s.svc.cluster.local" .Values.services.db.name .Release.Namespace -}}
+{{- end }}
 {{- end }}

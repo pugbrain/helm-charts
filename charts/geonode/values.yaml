@@ -1,6 +1,8 @@
 # Default values for geonode.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+# nameOverride: ""
+# fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -9,10 +11,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: "geonode-sa"
-
-route:
-  enabled: true  
+  name: "geonode"
 
 # Não usar ingress por enquanto
 ingress:
@@ -155,8 +154,8 @@ secrets:
     geoserver:
       user: admin
       password: geoserverpwd
-  postgres:
-    # host:
+  postgres:   # Change
+    host: ""
     port: 5432
     user: postgres
     password: postgrespwd
@@ -165,12 +164,12 @@ secrets:
     db:
       name: geonode
       user: geonode
-      password: dbpwd
+      password: geonodepwd
       schema: public
     geoDb:
       name: geonode_data
       user: geonode_data
-      password: geodbpwd
+      password: geonodedatapwd
       schema: public
   email:
     host: localhost
@@ -205,8 +204,6 @@ secrets:
         profileMemberAttr: uniqueMember
 
 
-
-
 # GeoNode Volumes
 volumes:
   # nginxConfd:
@@ -215,35 +212,25 @@ volumes:
   #   mountPath: /etc/nginx
   #   storageClassName: crc-csi-hostpath-provisioner
   statics:
-    name: statics
-    volumeName: null
     storage: 5Gi
     mountPath: /mnt/volumes/statics
-    storageClassName: crc-csi-hostpath-provisioner
+    storageClassName: "" # Change
   data:
-    name: data
-    volumeName: null
     storage: 5Gi
     mountPath: /data
-    storageClassName: crc-csi-hostpath-provisioner
+    storageClassName: "" # Change
   geoserverData:
-    name: geoserver-data
-    volumeName: null
     storage: 5Gi
     mountPath: /geoserver_data/data
-    storageClassName: crc-csi-hostpath-provisioner
+    storageClassName: "" # Change
   backupRestore:
-    name: backup-restore
-    volumeName: null
     storage: 5Gi
     mountPath: /backup_restore
-    storageClassName: crc-csi-hostpath-provisioner
+    storageClassName: "" # Change
   tmp:
-    name: tmp
-    volumeName: null
     storage: 5Gi
     mountPath: /tmp
-    storageClassName: crc-csi-hostpath-provisioner
+    storageClassName: nutanix-dynfiles-retain
 
 # GeoNode Services
 services:
@@ -497,6 +484,7 @@ services:
     
     volumes:
       storage: 1Gi
+      storageClassName:  "" # Change
 
     podAnnotations: {}
 
@@ -532,8 +520,10 @@ services:
     
     volumes:
       data:
+        storageClassName: "" # Change
         storage: 1Gi
       backups:
+        storageClassName: "" # Change
         storage: 1Gi    
 
     podAnnotations: {}

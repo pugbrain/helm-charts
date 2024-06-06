@@ -25,12 +25,9 @@ spec:
         - args:
             - memcached
             - $(MEMCACHED_OPTIONS)
-          env:
-            - name: MEMCACHED_OPTIONS
-              valueFrom:
-                configMapKeyRef:
-                  key: MEMCACHED_OPTIONS
-                  name: {{ include "geonode.configmap" . }}
+          envFrom:
+            - secretRef:
+                name: {{ include "geonode.name" . }}-memcached
           image: {{ .Values.services.memcached.image.repository }}:{{ .Values.services.memcached.image.tag | default "latest" }}
           imagePullPolicy: {{ .Values.services.memcached.image.pullPolicy }}
           name: {{ .Values.services.memcached.name }}

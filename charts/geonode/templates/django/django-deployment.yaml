@@ -37,7 +37,15 @@ spec:
             - configMapRef:
                 name: {{ include "geonode.configmap" . }}
             - secretRef:
-                name: {{ include "geonode.name" . }}-postgres            
+                name: {{ include "geonode.name" . }}-postgres
+            {{- if .Values.configs.ldap.enabled }}
+            - secretRef:
+                name: {{ include "geonode.name" . }}-ldap
+            {{- end }}
+            {{- if .Values.services.memcached.enabled }}
+            - secretRef:
+                name: {{ include "geonode.name" . }}-memcached
+            {{- end }}         
           image: {{ .Values.services.django.image.repository }}:{{ .Values.services.django.image.tag | default "latest-ubuntu-22.04" }}
           imagePullPolicy: {{ .Values.services.django.image.pullPolicy }}
           name: {{ .Values.services.django.name }}

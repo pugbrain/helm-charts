@@ -1,21 +1,18 @@
-{{- $pvcname :=  printf "%s-%s" .Release.Namespace .Release.Name -}}
-{{- with .Values.volumes }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  creationTimestamp: null
+  name: {{ include "geonode.fullname" . }}-statics
   labels:
-    io.kompose.service: {{ .statics.name }}
-  name: {{ .statics.name }}
+    {{- include "geonode.labels" . | nindent 4 }}
+{{- with .Values.volumes.statics }}
 spec:
   accessModes:
     - ReadWriteMany
-  {{- if .statics.volumeName }}
-  volumeName: {{ .statics.volumeName }}
+  volumeMode: Filesystem
+  {{- if .storageClassName }}
+  storageClassName: {{ .storageClassName }}
   {{- end }}
-  storageClassName: {{ .statics.storageClassName }}
   resources:
     requests:
-      storage: {{ .statics.storage }}
-status: {}
+      storage: {{ .storage }}
 {{- end }}

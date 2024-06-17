@@ -1,5 +1,16 @@
 apiVersion: v1
 entries:
+  dspace:
+  - apiVersion: v2
+    appVersion: dspace-7.6.1
+    created: "2024-06-17T23:02:34.281665163Z"
+    description: A Helm chart for Kubernetes
+    digest: 17ecad9bc3b6bf9bd91387ec9d0edc396cf60ec38dd94f68477c0ef467824476
+    name: dspace
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/dspace-0.1.0/dspace-0.1.0.tgz
+    version: 0.1.0
   geonetwork:
   - apiVersion: v2
     appVersion: 3.10.2
@@ -166,4 +177,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/nginx-0.1.0/nginx-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-20T14:21:38.54276547Z"
+generated: "2024-06-17T23:02:34.281674521Z"

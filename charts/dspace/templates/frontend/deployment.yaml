@@ -63,9 +63,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /home
-              port: frontend-port
+              port: frontend-port          
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
+      initContainers:
+        - name: init-myservice
+          image: busybox:1.28
+          command: ['sh', '-c', 'wget --spider http://{{ include "dspace.fullname" . }}-backend:8080/server']
       {{- with .Values.frontend.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

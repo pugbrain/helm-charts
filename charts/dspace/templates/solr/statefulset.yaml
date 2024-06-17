@@ -1,0 +1,48 @@
+{{- if .Values.solr.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "dspace.fullname" . }}-solr
+spec:
+  serviceName: {{ include "dspace.fullname" . }}-solr
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "dspace.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: search-engine
+  template:
+    metadata:
+      labels:
+        {{- include "dspace.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: search-engine
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: dspace-solr
+          image: "{{ .Values.solr.image.repository }}:{{ .Values.solr.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.solr.image.pullPolicy }}
+          workingDir: /var/solr/data
+          ports:
+            - containerPort: 8983
+              name: solr-port
+          volumeMounts:
+            - name: {{ include "dspace.fullname" . }}-solr
+              mountPath: /var/solr/data
+          command: ["/bin/bash"]
+          args: ['-c', 'init-var-solr; precreate-core authority /opt/solr/server/solr/configsets/authority; cp -r /opt/solr/server/solr/configsets/authority/* authority; precreate-core oai /opt/solr/server/solr/configsets/oai; cp -r /opt/solr/server/solr/configsets/oai/* oai; precreate-core search /opt/solr/server/solr/configsets/search; cp -r /opt/solr/server/solr/configsets/search/* search; precreate-core statistics /opt/solr/server/solr/configsets/statistics; cp -r /opt/solr/server/solr/configsets/statistics/* statistics; exec solr -f']
+
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "dspace.fullname" . }}-solr
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- with .Values.solr.pvc }}
+        {{- if .className }}
+        storageClassName: {{ .className }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .size }}
+        {{- end }}
+{{- end }}

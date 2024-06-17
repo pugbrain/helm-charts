@@ -1,0 +1,56 @@
+{{- if .Values.db.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "dspace.fullname" . }}-db
+spec:
+  serviceName: {{ include "dspace.fullname" . }}-db
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "dspace.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        {{- include "dspace.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: {{ include "dspace.serviceAccountName" . }}
+      containers:
+        - name: dspace-db
+          image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.db.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.db.securityContext | nindent 12 }}
+          ports:
+            - containerPort: 5432
+              name: db-port
+          volumeMounts:
+            - name: {{ include "dspace.fullname" . }}-db
+              mountPath: /postgres
+          env:
+            - name: PGDATA
+              value: /data
+            - name: POSTGRES_DB
+              value: dspace
+            - name: POSTGRES_USER
+              value: {{ .Values.backend.config.db.username }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.backend.config.db.password }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "dspace.fullname" . }}-db
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- with .Values.db.pvc }}
+        {{- if .className }}
+        storageClassName: {{ .className }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .size }}
+        {{- end }}
+{{- end }}

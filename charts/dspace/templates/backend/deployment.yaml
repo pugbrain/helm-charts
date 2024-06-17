@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dspace.fullname" . }}-backend
+  labels:
+    {{- include "dspace.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  {{- if not .Values.backend.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "dspace.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      {{- with .Values.backend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dspace.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+    spec:
+      {{- with .Values.backend.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "dspace.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+      volumes:
+        {{- if .Values.backend.pvc.enabled }}
+        - name: dspace-data
+          persistentVolumeClaim:
+            claimName: {{ include "dspace.fullname" . }}-backend
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-backend
+          securityContext:
+            {{- toYaml .Values.backend.securityContext | nindent 12 }}
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - name: backend-port
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: dspace__P__dir
+              value: {{ .Values.backend.config.name }}
+            - name: dspace__P__server__P__url
+              value: {{ printf "http://%s%s" .Values.ingress.backend.host .Values.ingress.backend.path }}
+            - name: dspace__P__ui__P__url
+              value: {{ printf "http://%s%s" .Values.ingress.frontend.host .Values.ingress.frontend.path }}
+            - name: dspace__P__name
+              value: {{ .Values.backend.config.name }}
+            - name: db__P__url              
+              value: {{ if .Values.db.enabled }}
+                       {{- printf "jdbc:postgresql://%s-db:%s/dspace" (include "dspace.fullname" .) "5432" -}}
+                     {{- else -}}
+                       {{- .Values.backend.config.db.url -}}
+                     {{- end }}
+            - name: db__P__username
+              value: {{ .Values.backend.config.db.username }}
+            - name: db__P__password
+              value: {{ .Values.backend.config.db.password }}
+            - name: solr__P__server
+              value: http://{{ include "dspace.fullname" . }}-solr:8983/solr
+            # - name: proxies__P__trusted__P__ipranges
+            #   value:  {{ .Values.backend.config.proxiesTrustedIPRanges }}
+            - name: CATALINA_OPTS
+              value: "-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+          volumeMounts:
+            {{- if .Values.backend.pvc.enabled }}
+            - mountPath: /dspace/assetstore
+              name: dspace-data
+            {{- end }}
+          livenessProbe:
+            tcpSocket:
+              port: backend-port
+          # https://wiki.lyrasis.org/pages/viewpage.action?pageId=289079751
+          readinessProbe:
+            httpGet:
+              path: /server/api/core/sites
+              port: backend-port
+          # TODO: Move commands before exec tomcat to initContainers
+          command: ["/bin/bash"]
+          args:
+            - '-c'
+            - |
+              /dspace/bin/dspace database migrate
+              catalina.sh run
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+      {{- with .Values.backend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

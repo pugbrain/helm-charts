@@ -58,7 +58,10 @@ backend:
     # urls:
     #  server: http://sgb-rigeo-teste.apps-crc.testing/server
     #  ui: http://sgb-rigeo-teste.apps-crc.testing
-    db: 'jdbc:postgresql://rigeo-dspace-db:5432/dspace'
+    db:
+      url: 'jdbc:postgresql://rigeo-dspace-db1:5432/dspace'
+      username: dspace
+      password: dspace
     # solr-server: 
     # proxiesTrustedIPRanges: '172.23.0'
   replicaCount: 1

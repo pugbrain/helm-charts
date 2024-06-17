@@ -55,8 +55,12 @@ spec:
               value: {{ printf "http://%s%s" .Values.ingress.frontend.host .Values.ingress.frontend.path }}
             - name: dspace__P__name
               value: {{ .Values.backend.config.name }}
-            - name: db__P__url
-              value: {{ .Values.backend.config.db.url }}
+            - name: db__P__url              
+              value: {{ if .Values.db.enabled }}
+                       {{- printf "jdbc:postgresql://%s-db:%s/dspace" (include "dspace.fullname" .) "5432" -}}
+                     {{- else -}}
+                       {{- .Values.backend.config.db.url -}}
+                     {{- end }}
             - name: db__P__username
               value: {{ .Values.backend.config.db.username }}
             - name: db__P__password

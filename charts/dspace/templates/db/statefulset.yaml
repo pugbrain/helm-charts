@@ -33,8 +33,12 @@ spec:
           env:
             - name: PGDATA
               value: /data
-            - name: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
               value: dspace
+            - name: POSTGRES_USER
+              value: {{ .Values.backend.config.db.username }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.backend.config.db.password }}
   volumeClaimTemplates:
     - metadata:
         name: {{ include "dspace.fullname" . }}-db

@@ -90,6 +90,8 @@ spec:
             - name: GEOSERVER_APPSCHEMA_PROPERTIES_FILE
               value: {{ .Values.config.appSchema.propertiesFile }}
             {{- end }}
+            - name: GEOSERVER_CORS_ALLOWED_ORIGINS
+              value: {{ join "," .Values.config.cors.allowedOrigins  }}            
           volumeMounts:
             {{- if .Values.pvc.data.enabled }}
             - mountPath: {{ .Values.pvc.data.storage.mountPath }}

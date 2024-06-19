@@ -108,7 +108,9 @@ config:
     GEOSERVER_OPTS: ""
   proxyBaseURL: ""
   console:
-    disabled: false 
+    disabled: false
+  cors:
+    allowedOrigins: []
   csrf: 
     disabled: false
     whitelist: []

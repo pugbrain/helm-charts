@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "demo-chart.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
+{{- $fullName := include "geonode.fullname" . -}}
+{{/* {{- $svcPort := .Values.service.port -}} */}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
@@ -17,7 +17,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "demo-chart.labels" . | nindent 4 }}
+    {{- include "geonode.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -37,6 +37,25 @@ spec:
     {{- end }}
   {{- end }}
   rules:
+    - host: {{ include "geonode.hostname" . }}
+      http:
+        paths:
+          - path: '/'
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ .Values.services.nginx.name }}
+                port:
+                  number: 80
+              {{- else }}
+              serviceName: {{ .Values.services.nginx.name }}
+              servicePort: 80
+              {{- end }}
+    {{/*
+    // Later
     {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
@@ -58,4 +77,5 @@ spec:
               {{- end }}
           {{- end }}
     {{- end }}
+    */}}
 {{- end }}

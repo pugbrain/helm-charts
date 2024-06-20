@@ -63,7 +63,7 @@ spec:
       initContainers:
         - name: geoserver-data
           image: {{ .Values.services.geoserver.image.dataRepository }}:{{ .Values.services.geoserver.image.tag | default "latest" }}
-          command: ['sh', '-c', "cp -rv ./data/* /geoserver_data/data/ && sleep 3"]
+          command: ['sh', '-c', "cp -rnv ./data/* /geoserver_data/data/ && sleep 3"]
           {{- with .Values.volumes }}
           volumeMounts:
             - mountPath: {{ .geoserverData.mountPath }}

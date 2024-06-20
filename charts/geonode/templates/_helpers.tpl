@@ -74,5 +74,5 @@ Default configmap
 Default host
 */}}
 {{- define "geonode.hostname" -}}
-{{- printf "%s.%s" (include "geonode.fullname" .) .Values.configs.domain }}
+{{- printf "%s.%s.%s" .Release.Name .Release.Namespace .Values.configs.domain }}
 {{- end }}

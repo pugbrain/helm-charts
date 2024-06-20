@@ -8,7 +8,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              io.kompose.network/geonode-default: "true"
+              org.{{ .Chart.Name }}/network: {{ .Release.Name }}-{{ .Release.Namespace }}
   podSelector:
     matchLabels:
-      io.kompose.network/geonode-default: "true"
+      org.{{ .Chart.Name }}/network: {{ .Release.Name }}-{{ .Release.Namespace }}

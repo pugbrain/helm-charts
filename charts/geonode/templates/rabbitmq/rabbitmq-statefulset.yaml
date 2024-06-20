@@ -17,7 +17,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        io.kompose.network/geonode-default: "true"
+        org.{{ .Chart.Name }}/network: {{ .Release.Name }}-{{ .Release.Namespace }}
         {{- include "rabbitmq.selectorLabels" . | nindent 8 }}
     spec:
       containers:

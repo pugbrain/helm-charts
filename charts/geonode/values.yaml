@@ -508,7 +508,7 @@ services:
     image:
       repository: geonode/postgis
       pullPolicy: IfNotPresent
-      tag: "13"
+      tag: "15.3-v1"
     
     resources:
       limits:

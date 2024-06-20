@@ -183,9 +183,9 @@ secrets:
     clientId: clientid
     secret: clientsecret
   apiKeys:
-    mapbox: null
-    bingMaps: null
-    googleMaps: null
+    mapbox: ''
+    bingMaps: ''
+    googleMaps: ''
   recaptcha:
     publicKey: null
     privateKey: null

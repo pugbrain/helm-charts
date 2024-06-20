@@ -199,9 +199,9 @@ data:
 
   # GIS Client
   GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY: mapstore
-  MAPBOX_ACCESS_TOKEN: {{ .Values.secrets.apiKeys.mapbox | toString }}
-  BING_API_KEY: {{ .Values.secrets.apiKeys.bingMaps | toString }}
-  GOOGLE_API_KEY: {{ .Values.secrets.apiKeys.googleMaps | toString }}
+  MAPBOX_ACCESS_TOKEN: {{ .Values.secrets.apiKeys.mapbox }}
+  BING_API_KEY: {{ .Values.secrets.apiKeys.bingMaps }}
+  GOOGLE_API_KEY: {{ .Values.secrets.apiKeys.googleMaps }}
 
   # Monitoring
   {{ with .Values.configs.monitoring }}

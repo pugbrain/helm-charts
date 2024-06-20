@@ -3,17 +3,17 @@ kind: ConfigMap
 metadata:
   name: {{ include "geonode.configmap" . }}
 data:
-  COMPOSE_PROJECT_NAME: geonode
+  COMPOSE_PROJECT_NAME: {{ .Values.configs.projectName }}   # Included in geoserver's entrypoint
   # See https://github.com/containers/podman/iss TIMEENAues/13889
   # DOCKER_BUILDKIT=0
-  DOCKER_ENV: production
+  # DOCKER_ENV: production
   # See https://github.com/geosolutions-it/geonode-generic/issues/28
   # to see why we force API version to 1.24
-  DOCKER_API_VERSION: "1.24"
-  BACKUPS_VOLUME_DRIVER: local
+  # DOCKER_API_VERSION: "1.24"
+  # BACKUPS_VOLUME_DRIVER: local
 
   # Init
-  C_FORCE_ROOT: "1"
+  # C_FORCE_ROOT: "1"
   FORCE_REINIT: {{ .Values.configs.forceReinit | toString | title | quote }}
   INVOKE_LOG_STDOUT: {{ .Values.configs.invokeLogStdout | toString | title | quote }}
 
@@ -251,7 +251,7 @@ data:
   POSTGRESQL_MAX_CONNECTIONS: {{ .Values.services.db.maxConnections | quote }}
 
   # Common containers restart policy
-  RESTART_POLICY_CONDITION: on-failure
-  RESTART_POLICY_DELAY: 5s
-  RESTART_POLICY_MAX_ATTEMPTS: "3"
-  RESTART_POLICY_WINDOW: 120s
+  # RESTART_POLICY_CONDITION: on-failure
+  # RESTART_POLICY_DELAY: 5s
+  # RESTART_POLICY_MAX_ATTEMPTS: "3"
+  # RESTART_POLICY_WINDOW: 120s

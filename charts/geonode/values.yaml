@@ -43,10 +43,11 @@ configs:
   forceReinit: false
   invokeLogStdout: true
   cacheBustingStaticEnabled: false
-  # TODO: Implementar recaptcha
   recaptcha:
     enabled: false
     signupFormClass: geonode.people.forms.AllauthReCaptchaSignupForm
+    publicKey: ''
+    privateKey: ''
   misc:
     modifyTopicCategory: true
     avatarGravatarSSL: true
@@ -189,9 +190,6 @@ secrets:
     mapbox: ''
     bingMaps: ''
     googleMaps: ''
-  recaptcha:
-    publicKey: null
-    privateKey: null
   ldap:
     serverURL: ldap://<the_ldap_server>
     bind:

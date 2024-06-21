@@ -3,6 +3,9 @@
 # Declare variables to be passed into your templates.
 # nameOverride: ""
 # fullnameOverride: ""
+resolver: 172.30.0.10  # 10.217.4.10 openshift local
+networkPolicy:
+  enabled: false
 
 serviceAccount:
   # Specifies whether a service account should be created

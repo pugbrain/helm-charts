@@ -18,7 +18,7 @@ serviceAccount:
 
 # Não usar ingress por enquanto
 ingress:
-  enabled: false
+  host: ide.sgb-opendata-homolog.apps.ocp.sgb.local
   # className: ""
   # annotations: {}
   #   # kubernetes.io/ingress.class: nginx
@@ -158,21 +158,21 @@ secrets:
       user: admin
       password: geoserverpwd
   postgres:   # Change
-    host: ""
+    host: lrnpdbmsd05.sgb.local
     port: 5432
     user: postgres
     password: postgrespwd
     maxAge: 0
     timeOut: 5
     db:
-      name: geonode
-      user: geonode
-      password: geonodepwd
+      name: geosgb
+      user: geosgb
+      password: 50HyEkzMHuAKpcQ8e0Nz
       schema: public
     geoDb:
-      name: geonode_data
-      user: geonode_data
-      password: geonodedatapwd
+      name: geosgb_data
+      user: geosgb_data
+      password: uMP6L8s6OIf7142hoYDd
       schema: public
   email:
     host: localhost
@@ -217,23 +217,23 @@ volumes:
   statics:
     storage: 5Gi
     mountPath: /mnt/volumes/statics
-    storageClassName: "" # Change
+    storageClassName: "nutanix-dynfiles-retain" # Change
   data:
     storage: 5Gi
     mountPath: /data
-    storageClassName: "" # Change
+    storageClassName: "nutanix-dynfiles-retain" # Change
   geoserverData:
     storage: 5Gi
     mountPath: /geoserver_data/data
-    storageClassName: "" # Change
+    storageClassName: "nutanix-dynfiles-retain" # Change
   backupRestore:
     storage: 5Gi
     mountPath: /backup_restore
-    storageClassName: "" # Change
+    storageClassName: "nutanix-dynfiles-retain" # Change
   tmp:
     storage: 5Gi
     mountPath: /tmp
-    storageClassName: "" # Change
+    storageClassName: "nutanix-dynfiles-retain" # Change
 
 # GeoNode Services
 services:
@@ -487,7 +487,7 @@ services:
     
     volumes:
       storage: 1Gi
-      storageClassName:  "" # Change
+      storageClassName:  "thin-csi" # Change
 
     podAnnotations: {}
 
@@ -505,7 +505,7 @@ services:
 
   db:
     name: postgis
-    external: false
+    external: true
     servicePort: 5432
     maxConnections: 200
     image:

@@ -1,0 +1,80 @@
+{{- $fullName := include "geonode.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.nginx.name }}
+  labels:
+    {{- include "nginx.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "nginx.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.nginx.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        org.{{ .Chart.Name }}/network: {{ .Release.Name }}-{{ .Release.Namespace }}
+        {{- include "nginx.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - image: {{ .Values.services.nginx.image.repository }}:{{ .Values.services.nginx.image.tag | default "latest-ubuntu-22.04" }}
+          imagePullPolicy: {{ .Values.services.nginx.image.pullPolicy }}
+          name: {{ .Values.services.nginx.name }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "geonode.configmap" . }}
+          securityContext:
+            {{- toYaml .Values.services.nginx.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.services.nginx.resources | nindent 12 }}
+          {{- with .Values.volumes }}
+          volumeMounts:
+            - mountPath: {{ .statics.mountPath }}
+              name: statics
+              readOnly: true
+            # - mountPath: { .nginxConfd.mountPath }
+            #   name: nginx-confd
+            #   readOnly: true
+          {{- end }}
+      initContainers:
+        - name: wait-for-geoserevr
+          image: docker.io/library/busybox:latest
+          command: ['sh', '-c', "until wget --spider http://{{ .Values.services.geoserver.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.geoserver.servicePort | toString }}/geoserver ; do echo waiting for geoserver...; sleep 2; done"]
+      serviceAccountName: {{ include "geonode.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.services.nginx.podSecurityContext | nindent 8 }}
+      restartPolicy: Always
+      {{- with .Values.services.nginx.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.nginx.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.nginx.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        # - name: nginx-confd
+        #   persistentVolumeClaim:
+        #     claimName: { .nginxConfd.name }
+        - name: statics
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-statics
+      {{- end }}

@@ -1,0 +1,137 @@
+{{- $fullName := include "geonode.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.django.name }}
+  labels:
+    {{- include "django.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "django.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.django.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        org.{{ .Chart.Name }}/network: {{ .Release.Name }}-{{ .Release.Namespace }}
+        {{- include "django.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - command:
+            - /usr/src/{{ .Values.configs.projectName }}/entrypoint.sh          
+          args:
+            - uwsgi
+            - "--ini"
+            {{- if .Values.services.django.uwsgi.override }}
+            - /var/run/uwsgi/uwsgi.ini
+            {{- else }}
+            - /usr/src/{{ .Values.configs.projectName }}/uwsgi.ini
+            {{- end }}
+          env:
+            - name: IS_CELERY
+              value: "false"
+          envFrom:
+            - configMapRef:
+                name: {{ include "geonode.configmap" . }}
+            - secretRef:
+                name: {{ include "geonode.name" . }}-postgres
+            {{- if .Values.configs.ldap.enabled }}
+            - secretRef:
+                name: {{ include "geonode.name" . }}-ldap
+            {{- end }}
+            {{- if .Values.services.memcached.enabled }}
+            - secretRef:
+                name: {{ include "geonode.name" . }}-memcached
+            {{- end }}         
+          image: {{ .Values.services.django.image.repository }}:{{ .Values.services.django.image.tag | default "latest-ubuntu-22.04" }}
+          imagePullPolicy: {{ .Values.services.django.image.pullPolicy }}
+          name: {{ .Values.services.django.name }}
+          livenessProbe:
+            exec:
+              command:
+                - |-
+                  curl --fail --silent --write-out 'HTTP CODE : %{http_code}
+                  ' --output /dev/null http://127.0.0.1:8000/
+            failureThreshold: 1
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            timeoutSeconds: 10
+          securityContext:
+            {{- toYaml .Values.services.django.securityContext | nindent 12 }}
+          ports:
+            - name: wsgi
+              containerPort: 8000
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.services.django.resources | nindent 12 }}          
+          volumeMounts:
+            {{- if .Values.services.django.uwsgi.override }}
+            - name: uwsgi
+              mountPath: /var/run/uwsgi
+              readOnly: true
+            {{- end }}
+            {{- with .Values.volumes }}
+            - mountPath: {{ .statics.mountPath }}
+              name: statics
+            - mountPath: {{ .geoserverData.mountPath }}
+              name: geoserver-data-dir
+            - mountPath: {{ .backupRestore.mountPath }}
+              name: backup-restore
+            - mountPath: {{ .data.mountPath }}
+              name: data
+            - mountPath: {{ .tmp.mountPath }}
+              name: tmp
+            {{- end }}
+      initContainers:
+        # TODO: melhorar este script - talvez usar imagem do geonode com envs
+        - name: wait-for-dbs
+          image: {{ .Values.services.db.image.repository }}:{{ .Values.services.db.image.tag | default "latest" }}
+          command: [
+            'sh', 
+            '-c', 
+            "PGPASSWORD={{ .Values.secrets.postgres.db.password }}; until pg_isready -d {{ .Values.secrets.postgres.db.name }} -U {{ .Values.secrets.postgres.db.user }} -h {{ include "db.hostname" . }}; do echo waiting for database; sleep 2; done"
+          ]
+      serviceAccountName: {{ include "geonode.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.services.django.podSecurityContext | nindent 8 }}
+      restartPolicy: Always
+      {{- with .Values.services.django.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.django.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.django.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}      
+      volumes:
+        {{- if .Values.services.django.uwsgi.override }}
+        - name: uwsgi
+          configMap:
+            name: {{ include "geonode.configmap" . }}-uwsgi
+        {{- end }}
+        - name: statics
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-statics
+        - name: geoserver-data-dir
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-geoserver-data
+        - name: backup-restore
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-backup-restore
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-data
+        - name: tmp
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-tmp
+status: {}

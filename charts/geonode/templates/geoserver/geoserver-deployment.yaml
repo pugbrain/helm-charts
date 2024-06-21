@@ -1,0 +1,109 @@
+{{- $fullName := include "geonode.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.geoserver.name }}
+  labels:
+    {{- include "geoserver.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geoserver.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.geoserver.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        org.{{ .Chart.Name }}/network: {{ .Release.Name }}-{{ .Release.Namespace }}
+        {{- include "geoserver.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - image: {{ .Values.services.geoserver.image.repository }}:{{ .Values.services.geoserver.image.tag | default "latest" }}
+          imagePullPolicy: {{ .Values.services.geoserver.image.pullPolicy }}
+          name: {{ .Values.services.geoserver.name }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "geonode.configmap" . }}  
+          livenessProbe:
+            exec:
+              command:
+                - |-
+                  curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}
+                  ' --output /dev/null http://localhost:8080/geoserver/ows
+            failureThreshold: 2
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            timeoutSeconds: 10
+          securityContext:
+            {{- toYaml .Values.services.geoserver.securityContext | nindent 12 }}
+          ports:
+            - name: http-alt
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.services.geoserver.resources | nindent 12 }}
+          {{- with .Values.volumes }}
+          volumeMounts:
+            - mountPath: {{ .statics.mountPath }}
+              name: statics
+            - mountPath: {{ .geoserverData.mountPath }}
+              name: geoserver-data-dir
+            - mountPath: {{ .backupRestore.mountPath }}
+              name: backup-restore
+            - mountPath: {{ .data.mountPath }}
+              name: data
+            - mountPath: {{ .tmp.mountPath }}
+              name: tmp
+          {{- end }}
+      initContainers:
+        - name: geoserver-data
+          image: {{ .Values.services.geoserver.image.dataRepository }}:{{ .Values.services.geoserver.image.tag | default "latest" }}
+          command: ['sh', '-c', "cp -rnv ./data/* /geoserver_data/data/ && sleep 3"]
+          {{- with .Values.volumes }}
+          volumeMounts:
+            - mountPath: {{ .geoserverData.mountPath }}
+              name: geoserver-data-dir
+          {{- end }}
+        - name: wait-for-django
+          image: {{ .Values.services.db.image.repository }}:{{ .Values.services.db.image.tag | default "latest" }}
+          command: ['sh', '-c', "until wget --spider http://{{ .Values.services.django.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.django.servicePort | toString }}; do echo waiting for django; sleep 2; done"]
+      serviceAccountName: {{ include "geonode.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.services.geoserver.podSecurityContext | nindent 8 }}
+      restartPolicy: Always
+      {{- with .Values.services.geoserver.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.geoserver.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.geoserver.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        - name: statics
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-statics
+        - name: geoserver-data-dir
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-geoserver-data
+        - name: backup-restore
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-backup-restore
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-data
+        - name: tmp
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}-tmp
+      {{- end }}
+status: {}

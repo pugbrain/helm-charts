@@ -33,6 +33,9 @@ spec:
             {{- else }}
             - /usr/src/{{ .Values.configs.projectName }}/uwsgi.ini
             {{- end }}
+          env:
+            - name: IS_CELERY
+              value: "false"
           envFrom:
             - configMapRef:
                 name: {{ include "geonode.configmap" . }}

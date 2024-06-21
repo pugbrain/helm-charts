@@ -27,6 +27,9 @@ spec:
             - celery-cmd
           command:
             - /usr/src/{{ .Values.configs.projectName }}/entrypoint.sh
+          env:
+            - name: IS_CELERY
+              value: "true"
           envFrom:
             - configMapRef:
                 name: {{ include "geonode.configmap" . }}

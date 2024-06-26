@@ -28,17 +28,20 @@ spec:
           name: {{ .Values.services.geoserver.name }}
           envFrom:
             - configMapRef:
-                name: {{ include "geonode.configmap" . }}  
-          livenessProbe:
+                name: {{ include "geonode.configmap" . }}
+            - secretRef:
+                name: {{ include "geonode.name" . }}-postgres
+          readinessProbe:
             exec:
               command:
-                - |-
-                  curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}
-                  ' --output /dev/null http://localhost:8080/geoserver/ows
+                - wget
+                - '-O-'
+                - '--spider'
+                - http://localhost:8080/geoserver/ows
             failureThreshold: 2
             initialDelaySeconds: 60
             periodSeconds: 60
-            timeoutSeconds: 10
+            timeoutSeconds: 20
           securityContext:
             {{- toYaml .Values.services.geoserver.securityContext | nindent 12 }}
           ports:

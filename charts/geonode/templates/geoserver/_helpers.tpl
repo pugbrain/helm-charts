@@ -27,3 +27,7 @@ Geoserver Service - hostname
 {{- define "geoserver.hostname" -}}
 {{- printf "%s.%s.svc.cluster.local" .Values.services.geoserver.name .Release.Namespace -}}
 {{- end }}
+
+{{- define "geoserver.internalPath" -}}
+{{- printf "http://%s:%d/geoserver" ( include "geoserver.hostname" . ) ( .Values.services.geoserver.servicePort | int ) -}}
+{{- end }}

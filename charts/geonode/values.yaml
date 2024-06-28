@@ -18,7 +18,7 @@ serviceAccount:
 
 # Não usar ingress por enquanto
 ingress:
-  host: ide.sgb-opendata-homolog.apps.ocp.sgb.local
+  host: ""
   # className: ""
   # annotations: {}
   #   # kubernetes.io/ingress.class: nginx
@@ -215,23 +215,23 @@ volumes:
   statics:
     storage: 5Gi
     mountPath: /mnt/volumes/statics
-    storageClassName: "nutanix-dynfiles-retain" # Change
+    storageClassName: "" # Change
   data:
     storage: 5Gi
     mountPath: /data
-    storageClassName: "nutanix-dynfiles-retain" # Change
+    storageClassName: "" # Change
   geoserverData:
     storage: 5Gi
     mountPath: /geoserver_data/data
-    storageClassName: "nutanix-dynfiles-retain" # Change
+    storageClassName: "" # Change
   backupRestore:
     storage: 5Gi
     mountPath: /backup_restore
-    storageClassName: "nutanix-dynfiles-retain" # Change
+    storageClassName: "" # Change
   tmp:
     storage: 5Gi
     mountPath: /tmp
-    storageClassName: "nutanix-dynfiles-retain" # Change
+    storageClassName: "" # Change
 
 # GeoNode Services
 services:
@@ -275,7 +275,7 @@ services:
       minReplicas: 1
       maxReplicas: 5
       targetCPUUtilizationPercentage: 80
-      # targetMemoryUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
 
     nodeSelector: {}
 
@@ -326,7 +326,7 @@ services:
       minReplicas: 1
       maxReplicas: 5
       targetCPUUtilizationPercentage: 80
-      # targetMemoryUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
 
     nodeSelector: {}
 
@@ -392,9 +392,9 @@ services:
       # Overrides the image tag whose default is the chart appVersion.
       tag: "2.24.2-v1"
 
-    imagePullSecrets: []
-    nameOverride: ""
-    fullnameOverride: ""
+    # imagePullSecrets: []
+    # nameOverride: ""
+    # fullnameOverride: ""
 
     podAnnotations: {}
 
@@ -485,7 +485,7 @@ services:
     
     volumes:
       storage: 1Gi
-      storageClassName:  "thin-csi" # Change
+      storageClassName:  "" # Change
 
     podAnnotations: {}
 
@@ -503,7 +503,7 @@ services:
 
   db:
     name: postgis
-    external: true
+    external: false
     servicePort: 5432
     maxConnections: 200
     image:

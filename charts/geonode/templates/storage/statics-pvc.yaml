@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "geonode.fullname" . }}-statics
+  name: {{ include "geonode.statics-pvc" . }}
   labels:
     {{- include "geonode.labels" . | nindent 4 }}
 {{- with .Values.volumes.statics }}

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "geonode.fullname" . }}-backup-restore
+  name: {{ include "geonode.backup-restore-pvc" . }}
   labels:
     {{- include "geonode.labels" . | nindent 4 }}
 {{- with .Values.volumes.backupRestore }}

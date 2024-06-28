@@ -1,4 +1,3 @@
-{{- $fullName := include "geonode.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -87,22 +86,20 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.volumes }}
       volumes:
         - name: statics
           persistentVolumeClaim:
-            claimName: {{ $fullName }}-statics
+            claimName: {{ include "geonode.statics-pvc" . }}
         - name: geoserver-data-dir
           persistentVolumeClaim:
-            claimName: {{ $fullName }}-geoserver-data
+            claimName: {{ include "geonode.geoserver-data-pvc" . }}
         - name: backup-restore
           persistentVolumeClaim:
-            claimName: {{ $fullName }}-backup-restore
+            claimName: {{ include "geonode.backup-restore-pvc" . }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ $fullName }}-data
+            claimName: {{ include "geonode.data-pvc" . }}
         - name: tmp
           persistentVolumeClaim:
-            claimName: {{ $fullName }}-tmp
-      {{- end }}
+            claimName: {{ include "geonode.tmp-pvc" . }}
 status: {}

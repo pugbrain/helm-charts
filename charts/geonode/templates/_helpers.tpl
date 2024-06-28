@@ -80,3 +80,26 @@ Default host
 {{- printf "%s.%s.%s" .Release.Name .Release.Namespace .Values.configs.domain }}
 {{- end }}
 {{- end }}
+
+{{/*
+Define PVC names
+*/}}
+{{- define "geonode.backup-restore-pvc" -}}
+{{- printf "%s-backup-restore" (include "geonode.name" .) }}
+{{- end }}
+
+{{- define "geonode.data-pvc" -}}
+{{- printf "%s-data" (include "geonode.name" .) }}
+{{- end }}
+
+{{- define "geonode.geoserver-data-pvc" -}}
+{{- printf "%s-geoserver-data" (include "geonode.name" .) }}
+{{- end }}
+
+{{- define "geonode.statics-pvc" -}}
+{{- printf "%s-statics" (include "geonode.name" .) }}
+{{- end }}
+
+{{- define "geonode.tmp-pvc" -}}
+{{- printf "%s-tmp" (include "geonode.name" .) }}
+{{- end }}

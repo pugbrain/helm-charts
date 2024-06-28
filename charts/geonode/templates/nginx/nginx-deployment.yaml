@@ -1,4 +1,3 @@
-{{- $fullName := include "geonode.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -69,12 +68,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.volumes }}
       volumes:
         # - name: nginx-confd
         #   persistentVolumeClaim:
         #     claimName: { .nginxConfd.name }
         - name: statics
           persistentVolumeClaim:
-            claimName: {{ $fullName }}-statics
-      {{- end }}
+            claimName: {{ include "geonode.statics-pvc" . }}

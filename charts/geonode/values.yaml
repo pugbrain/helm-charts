@@ -1,8 +1,13 @@
 # Default values for geonode.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-# nameOverride: ""
-# fullnameOverride: ""
+
+# override geonode.name
+nameOverride: ""
+# override geonode.fullname
+fullnameOverride: ""
+
+
 resolver: 172.30.0.10  # 10.217.4.10 openshift local
 networkPolicy:
   enabled: false
@@ -14,7 +19,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: "geonode"
+  name: ""
 
 # Não usar ingress por enquanto
 ingress:

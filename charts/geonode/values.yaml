@@ -7,8 +7,6 @@ nameOverride: ""
 # override geonode.fullname
 fullnameOverride: ""
 
-
-resolver: 172.30.0.10  # 10.217.4.10 openshift local
 networkPolicy:
   enabled: false
 
@@ -247,6 +245,9 @@ services:
       pullPolicy: IfNotPresent
       # Overrides the image tag whose default is the chart appVersion.
       tag: "1.25.3-v1"
+
+    config:
+      resolver: ''
 
     podAnnotations: {}
 

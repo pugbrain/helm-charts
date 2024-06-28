@@ -77,7 +77,7 @@ data:
   # production : we get a normal certificate (default)
   LETSENCRYPT_MODE: disabled
 
-  RESOLVER: {{ .Values.resolver }}
+  RESOLVER: {{ required "A valid resolver is required! See resolver list in README" .Values.services.nginx.config.resolver }}
 
   # #################
   # geoserver

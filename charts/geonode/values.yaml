@@ -113,7 +113,7 @@ configs:
       backoffFactor: 0.3
       poolMaxSize: 10
       poolConnections: 10
-    javaOpts: |-
+    javaOpts: >-
       -Djava.awt.headless=true 
       -Xms4G 
       -Xmx4G 
@@ -136,11 +136,23 @@ configs:
       -DALLOW_ENV_PARAMETRIZATION=true 
       -Xbootclasspath/a:/usr/local/tomcat/webapps/geoserver/WEB-INF/lib/marlin-0.9.3-Unsafe.jar 
       -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine
-  # celery:
-  #   brokerURL:
+  celery:
+    brokerURL: ""
   #   scheduler:
   ldap:
     enabled: false
+    serverURL: ldap://<the_ldap_server>
+    bind:
+      dn: uid=ldapinfo,cn=users,dc=ad,dc=example,dc=org
+      password: <asecretpassword>
+    search:
+      user:
+        dn: dc=ad,dc=example,dc=org
+        filterStr: (&(uid=%(user)s)(objectClass=person))
+      group:
+        dn: cn=groups,dc=ad,dc=example,dc=org
+        filterStr: (|(cn=abt1)(cn=abt2)(cn=abt3)(cn=abt4)(cn=abt5)(cn=abt6))
+        profileMemberAttr: uniqueMember
   
 secrets:
   django: M<]M/$CpU9YXR5nNmPqCj73UXi,n>)_X,[zRj6T=2Sj==Z}vWd
@@ -184,19 +196,7 @@ secrets:
     mapbox: ''
     bingMaps: ''
     googleMaps: ''
-  ldap:
-    serverURL: ldap://<the_ldap_server>
-    bind:
-      dn: uid=ldapinfo,cn=users,dc=ad,dc=example,dc=org
-      password: <asecretpassword>
-    search:
-      user:
-        dn: dc=ad,dc=example,dc=org
-        filterStr: (&(uid=%(user)s)(objectClass=person))
-      group:
-        dn: cn=groups,dc=ad,dc=example,dc=org
-        filterStr: (|(cn=abt1)(cn=abt2)(cn=abt3)(cn=abt4)(cn=abt5)(cn=abt6))
-        profileMemberAttr: uniqueMember
+    
 
 
 # GeoNode Volumes

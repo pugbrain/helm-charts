@@ -99,3 +99,10 @@ Define PVC names
 {{- define "geonode.tmp-pvc" -}}
 {{- printf "%s-tmp" (include "geonode.name" .) }}
 {{- end }}
+
+{{/*
+Define Secret names
+*/}}
+{{- define "geonode.ldap-secret" -}}
+{{- printf "%s-ldap" (include "geonode.name" .) }}
+{{- end }}

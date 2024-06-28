@@ -27,3 +27,8 @@ RabbitMQ Service - hostname
 {{- define "rabbitmq.hostname" -}}
 {{- printf "%s.%s.svc.cluster.local" .Values.services.rabbitmq.name .Release.Namespace -}}
 {{- end }}
+
+{{- define "rabbitmq.internalPath" -}}
+{{- $brokerUrl :=  printf "amqp://guest:guest@%s:%d/" (include "rabbitmq.hostname" .) (.Values.services.rabbitmq.servicePort | int ) }}
+{{- default $brokerUrl .Values.configs.celery.brokerURL }}
+{{- end }}

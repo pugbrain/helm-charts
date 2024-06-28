@@ -28,9 +28,8 @@ data:
   # backend
   # #################
   # Postgres in geonode-postgres-secrets.yaml
-  
-  {{- $brokerUrl :=  printf "amqp://guest:guest@%s:%s/" (include "rabbitmq.hostname" .) (.Values.services.rabbitmq.servicePort | toString) }}
-  BROKER_URL: {{ $brokerUrl }}
+
+  BROKER_URL: {{ include "rabbitmq.internalPath" . }}
   CELERY_BEAT_SCHEDULER: celery.beat:PersistentScheduler
   ASYNC_SIGNALS: "True"
 
@@ -102,7 +101,7 @@ data:
   # Java Options & Memory
   ENABLE_JSONP: 'True'
   outFormat: text/javascript
-  GEOSERVER_JAVA_OPTS: {{ .ogcRequest.javaOpts | quote }}
+  GEOSERVER_JAVA_OPTS: {{ .javaOpts | quote }}
   {{ end }}
   # #################
   # Security

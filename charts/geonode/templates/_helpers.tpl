@@ -74,11 +74,7 @@ Default configmap
 Default host
 */}}
 {{- define "geonode.hostname" -}}
-{{- if and .Values.ingress.host }}
-{{- printf .Values.ingress.host }}
-{{- else }}
-{{- printf "%s.%s.%s" .Release.Name .Release.Namespace .Values.configs.domain }}
-{{- end }}
+{{- default (printf "%s.%s.%s" .Release.Name .Release.Namespace .Values.configs.domain) .Values.ingress.hostname }}
 {{- end }}
 
 {{/*

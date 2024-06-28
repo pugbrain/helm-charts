@@ -103,6 +103,10 @@ Define PVC names
 {{/*
 Define Secret names
 */}}
+{{- define "geonode.memcached-secret" -}}
+{{- printf "%s-memcached" (include "geonode.name" .) }}
+{{- end }}
+
 {{- define "geonode.ldap-secret" -}}
 {{- printf "%s-ldap" (include "geonode.name" .) }}
 {{- end }}

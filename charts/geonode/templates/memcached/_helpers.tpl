@@ -27,3 +27,7 @@ Memcached Service - hostname
 {{- define "memcached.hostname" -}}
 {{- printf "%s.%s.svc.cluster.local" .Values.services.memcached.name .Release.Namespace -}}
 {{- end }}
+
+{{- define "memcached.internalPath" -}}
+{{- printf "%s:%d" ( include "memcached.hostname" . ) ( .Values.services.memcached.servicePort | int ) }}
+{{- end }}

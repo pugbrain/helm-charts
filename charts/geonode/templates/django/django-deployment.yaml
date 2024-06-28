@@ -46,11 +46,11 @@ spec:
             {{- end }}
             {{- if .Values.configs.ldap.enabled }}
             - secretRef:
-                name: {{ include "geonode.name" . }}-ldap
+                name: {{ include "geonode.ldap-secret" . }}
             {{- end }}
             {{- if .Values.services.memcached.enabled }}
             - secretRef:
-                name: {{ include "geonode.name" . }}-memcached
+                name: {{ include "geonode.memcached-secret" . }}
             {{- end }}
           {{- with .Values.services.django.image }}
           image: {{ .repository }}:{{ .tag }}

@@ -68,8 +68,14 @@ spec:
             {{- end }}
       initContainers:
         - name: wait-for-django
-          image: {{ .Values.services.db.image.repository }}:{{ .Values.services.db.image.tag | default "latest" }}
-          command: ['sh', '-c', "until wget --spider http://{{ .Values.services.django.name }}.{{ .Release.Namespace }}.svc.cluster.local:8000; do echo waiting for django; sleep 2; done"]
+          image: docker.io/library/busybox:latest
+          command: 
+            - 'sh'
+            - '-c' 
+            - >
+              until wget -T 5 --spider {{ include "django.internalPath" . }}
+                do echo waiting for django...; sleep 2; 
+              done
       serviceAccountName: {{ include "geonode.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.services.celery.podSecurityContext | nindent 8 }}

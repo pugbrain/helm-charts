@@ -72,8 +72,14 @@ spec:
               name: geoserver-data-dir
           {{- end }}
         - name: wait-for-django
-          image: {{ .Values.services.db.image.repository }}:{{ .Values.services.db.image.tag | default "latest" }}
-          command: ['sh', '-c', "until wget --spider http://{{ .Values.services.django.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.django.servicePort | toString }}; do echo waiting for django; sleep 2; done"]
+          image: docker.io/library/busybox:latest
+          command: 
+            - 'sh'
+            - '-c' 
+            - >
+              until wget -T 5 --spider {{ include "django.internalPath" . }}
+                do echo waiting for django...; sleep 2; 
+              done
       serviceAccountName: {{ include "geonode.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.services.geoserver.podSecurityContext | nindent 8 }}

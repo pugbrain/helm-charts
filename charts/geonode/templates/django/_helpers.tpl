@@ -28,3 +28,7 @@ Django Service - hostname
 {{- define "django.hostname" -}}
 {{- printf "%s.%s.svc.cluster.local" .Values.services.django.name .Release.Namespace -}}
 {{- end }}
+
+{{- define "django.internalPath" -}}
+{{- printf "http://%s:%d" ( include "django.hostname" . ) ( .Values.services.django.servicePort | int ) -}}
+{{- end }}

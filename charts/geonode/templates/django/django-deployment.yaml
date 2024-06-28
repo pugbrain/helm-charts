@@ -42,7 +42,7 @@ spec:
                 name: {{ include "geonode.name" . }}-postgres
             {{- if .Values.configs.recaptcha.enabled }}
             - secretRef:
-                name: {{ include "geonode.name" . }}-recaptcha
+                name: {{ include "geonode.recaptcha-secret" . }}
             {{- end }}
             {{- if .Values.configs.ldap.enabled }}
             - secretRef:

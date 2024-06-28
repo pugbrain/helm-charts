@@ -46,8 +46,10 @@ spec:
             - secretRef:
                 name: {{ include "geonode.name" . }}-memcached
             {{- end }}
-          image: {{ .Values.services.celery.image.repository }}:{{ .Values.services.celery.image.tag | default "latest-ubuntu-22.04" }}
-          imagePullPolicy: {{ .Values.services.celery.image.pullPolicy }}
+          {{- with .Values.services.celery.image }}
+          image: {{ .repository }}:{{ .tag }}
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
           name: {{ .Values.services.celery.name }}
           securityContext:
             {{- toYaml .Values.services.celery.securityContext | nindent 12 }}

@@ -22,9 +22,11 @@ spec:
         {{- include "nginx.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - image: {{ .Values.services.nginx.image.repository }}:{{ .Values.services.nginx.image.tag | default "latest-ubuntu-22.04" }}
-          imagePullPolicy: {{ .Values.services.nginx.image.pullPolicy }}
-          name: {{ .Values.services.nginx.name }}
+        - name: {{ .Values.services.nginx.name }}
+          {{- with .Values.services.nginx.image }}
+          image: {{ .repository }}:{{ .tag }}
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "geonode.configmap" . }}

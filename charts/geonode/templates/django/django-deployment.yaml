@@ -51,9 +51,11 @@ spec:
             {{- if .Values.services.memcached.enabled }}
             - secretRef:
                 name: {{ include "geonode.name" . }}-memcached
-            {{- end }}         
-          image: {{ .Values.services.django.image.repository }}:{{ .Values.services.django.image.tag | default "latest-ubuntu-22.04" }}
-          imagePullPolicy: {{ .Values.services.django.image.pullPolicy }}
+            {{- end }}
+          {{- with .Values.services.django.image }}
+          image: {{ .repository }}:{{ .tag }}
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
           name: {{ .Values.services.django.name }}
           livenessProbe:
             exec:

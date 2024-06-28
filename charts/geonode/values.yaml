@@ -383,11 +383,17 @@ services:
     name: geoserver
     servicePort: 8080
     image:
-      repository: geonode/geoserver
-      dataRepository: geonode/geoserver_data
-      pullPolicy: IfNotPresent
-      # Overrides the image tag whose default is the chart appVersion.
-      tag: "2.24.2-v1"
+      app:
+        repository: geonode/geoserver
+        pullPolicy: &geoserverPullPolicy IfNotPresent
+        # Overrides the image tag whose default is the chart appVersion.
+        tag: &geoserverTag "2.24.2-v1"
+      data:
+        repository: geonode/geoserver_data
+        pullPolicy: *geoserverPullPolicy
+        # Overrides the image tag whose default is the chart appVersion.
+        tag: *geoserverTag
+      
 
     # imagePullSecrets: []
     # nameOverride: ""

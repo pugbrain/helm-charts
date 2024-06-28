@@ -22,9 +22,11 @@ spec:
         {{- include "geoserver.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - image: {{ .Values.services.geoserver.image.repository }}:{{ .Values.services.geoserver.image.tag | default "latest" }}
-          imagePullPolicy: {{ .Values.services.geoserver.image.pullPolicy }}
-          name: {{ .Values.services.geoserver.name }}
+        - name: {{ .Values.services.geoserver.name }}
+          {{- with .Values.services.geoserver.image.app }}
+          image: {{ .repository }}:{{ .tag }}
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }} 
           envFrom:
             - configMapRef:
                 name: {{ include "geonode.configmap" . }}
@@ -64,7 +66,10 @@ spec:
           {{- end }}
       initContainers:
         - name: copy-geoserver-data-if-necessary
-          image: {{ .Values.services.geoserver.image.dataRepository }}:{{ .Values.services.geoserver.image.tag | default "latest" }}
+          {{- with .Values.services.geoserver.image.data }}
+          image: {{ .repository }}:{{ .tag }}
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}          
           {{- with .Values.volumes.geoserverData }}
           command: 
             - 'sh'

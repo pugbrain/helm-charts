@@ -42,6 +42,21 @@ entries:
   geonode:
   - apiVersion: v2
     appVersion: "4.2"
+    created: "2024-06-28T16:33:52.441740275Z"
+    description: A Helm chart for Geonode
+    digest: 422f1bef0ede9647c5a65e7246eaf1a72f047c3115e43f55a1c703db677c4e05
+    icon: https://avatars.githubusercontent.com/u/132843?s=200&v=4
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+      url: https://www.sgb.gov.br
+    name: geonode
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/geonode-0.2.3/geonode-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
+    appVersion: "4.2"
     created: "2024-06-26T14:29:35.428647972Z"
     description: A Helm chart for Geonode
     digest: ebb9b070794dffbfe70b51a6d1de8fb6d5fd62ee4dd40ab51d382821252a0292
@@ -265,4 +280,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/nginx-0.1.0/nginx-0.1.0.tgz
     version: 0.1.0
-generated: "2024-06-26T14:29:35.428672437Z"
+generated: "2024-06-28T16:33:52.441769139Z"

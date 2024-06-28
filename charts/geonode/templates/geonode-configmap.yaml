@@ -82,12 +82,11 @@ data:
   # #################
   # geoserver
   # #################
-  {{- $geoserverLocation :=  printf "http://%s:%s/geoserver/" (include "geoserver.hostname" .) (.Values.services.geoserver.servicePort | toString) }}
   GEOSERVER_LB_HOST_IP: {{ include "geoserver.hostname" . }}
   GEOSERVER_LB_PORT: {{ .Values.services.geoserver.servicePort | toString | quote }}
   GEOSERVER_WEB_UI_LOCATION: http://{{ include "geonode.hostname" . }}/geoserver/
   GEOSERVER_PUBLIC_LOCATION: http://{{ include "geonode.hostname" . }}/geoserver/
-  GEOSERVER_LOCATION: {{ $geoserverLocation }}
+  GEOSERVER_LOCATION: {{ include "geoserver.internalPath" . }}
   {{ with .Values.secrets.admin }}
   GEOSERVER_ADMIN_USER: {{ .geoserver.user }}
   GEOSERVER_ADMIN_PASSWORD: {{ .geoserver.password }}

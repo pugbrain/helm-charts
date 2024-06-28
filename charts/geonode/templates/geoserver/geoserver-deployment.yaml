@@ -63,12 +63,15 @@ spec:
               name: tmp
           {{- end }}
       initContainers:
-        - name: geoserver-data
+        - name: copy-geoserver-data-if-necessary
           image: {{ .Values.services.geoserver.image.dataRepository }}:{{ .Values.services.geoserver.image.tag | default "latest" }}
-          command: ['sh', '-c', "cp -rnv ./data/* /geoserver_data/data/ && sleep 3"]
-          {{- with .Values.volumes }}
+          {{- with .Values.volumes.geoserverData }}
+          command: 
+            - 'sh'
+            - '-c'
+            - '[ "$(ls -A {{ .mountPath }})" ] && echo "GEOSERVER_DATA_DIR not empty" || cp -rv ./data/* {{ .mountPath }}'          
           volumeMounts:
-            - mountPath: {{ .geoserverData.mountPath }}
+            - mountPath: {{ .mountPath }}
               name: geoserver-data-dir
           {{- end }}
         - name: wait-for-django

@@ -86,10 +86,9 @@ data:
   GEOSERVER_WEB_UI_LOCATION: http://{{ include "geonode.hostname" . }}/geoserver/
   GEOSERVER_PUBLIC_LOCATION: http://{{ include "geonode.hostname" . }}/geoserver/
   GEOSERVER_LOCATION: {{ include "geoserver.internalPath" . }}
-  {{ with .Values.secrets.admin }}
-  GEOSERVER_ADMIN_USER: {{ .geoserver.user }}
-  GEOSERVER_ADMIN_PASSWORD: {{ .geoserver.password }}
-  {{ end }}
+  
+  GEOSERVER_ADMIN_USER: {{ (default .Values.configs.admin.user .Values.configs.geoserver.admin.user) | toString | quote }}
+  GEOSERVER_ADMIN_PASSWORD: {{ (default .Values.configs.admin.password .Values.configs.geoserver.admin.password) | toString | quote }}
 
   {{ with .Values.configs.geoserver }}
   OGC_REQUEST_TIMEOUT: {{ .ogcRequest.timeout | quote }}
@@ -103,6 +102,7 @@ data:
   outFormat: text/javascript
   GEOSERVER_JAVA_OPTS: {{ .javaOpts | quote }}
   {{ end }}
+  
   # #################
   # Security
   # #################
@@ -112,11 +112,11 @@ data:
   # GeoNode is run. If you need to overwrite it again, you need to set the env var FORCE_REINIT,
   # otherwise the invoke updateadmin task will be skipped and the current password already stored
   # in DB will honored.
-  {{ with .Values.secrets.admin }}
-  ADMIN_USERNAME: {{ .geonode.user }}
-  ADMIN_PASSWORD: {{ .geonode.password }}
-  ADMIN_EMAIL: {{ .geonode.email }}
-  {{ end }}
+  {{- with .Values.configs.admin -}}
+  ADMIN_USERNAME: {{ .user | toString | quote }}
+  ADMIN_PASSWORD: {{ (required "A password for GeoNode admin user is required!" .password ) | toString | quote }}
+  ADMIN_EMAIL: {{ .email }}
+  {{- end -}}
 
   # EMAIL Notifications
   # TODO: Ser if enabled
@@ -163,16 +163,21 @@ data:
   AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS: {{ .autoAssignRegisteredToContributorsGroup | toString | title | quote }}
   {{ end }}
 
-  # OAuth2
-  {{ with .Values.secrets.oAuth2 }}
-  OAUTH2_API_KEY: {{ .apiKey | toString}}
-  OAUTH2_CLIENT_ID: {{ .clientId | toString }}
-  OAUTH2_CLIENT_SECRET: {{ .secret | toString }}
+  
+  {{ with .Values.configs.oAuth2 }}
+  # OAuth2 with GeoServer (geonode REST role service)
+  OAUTH2_API_KEY: {{ ( required "Please provide a GeoNode OAUTH2 API Key - keep it safe" .apiKey ) | quote }}
+
+  # GeoNode OAuth Toolkit
+  OAUTH2_CLIENT_ID: {{ .clientId | quote }}
+  OAUTH2_CLIENT_SECRET: {{ .secret | quote }}
   {{ end }}
 
   # GeoNode APIs
-  API_LOCKDOWN: "False"
-  TASTYPIE_APIKEY: ""
+  {{- with .Values.configs.tastyPie }}
+  API_LOCKDOWN: {{ .apiLockDown | toString | title | quote }}
+  TASTYPIE_APIKEY: {{ .apiKey }}
+  {{- end }}
 
   # #################
   # Production and
@@ -197,9 +202,11 @@ data:
 
   # GIS Client
   GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY: mapstore
-  MAPBOX_ACCESS_TOKEN: {{ .Values.secrets.apiKeys.mapbox }}
-  BING_API_KEY: {{ .Values.secrets.apiKeys.bingMaps }}
-  GOOGLE_API_KEY: {{ .Values.secrets.apiKeys.googleMaps }}
+  {{- with .Values.configs.apiKeys }}
+  MAPBOX_ACCESS_TOKEN: {{ .mapbox }}
+  BING_API_KEY: {{ .bingMaps }}
+  GOOGLE_API_KEY: {{ .googleMaps }}
+  {{- end  }}
 
   # Monitoring
   {{ with .Values.configs.monitoring }}

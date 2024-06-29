@@ -37,6 +37,10 @@ configs:
   forceReinit: false
   invokeLogStdout: true
   cacheBustingStaticEnabled: false
+  admin:
+    email: admin@geonode.cluster.local
+    user: admin
+    password: ''
   recaptcha:
     enabled: false
     signupFormClass: geonode.people.forms.AllauthReCaptchaSignupForm
@@ -65,6 +69,17 @@ configs:
   email:
     enabled: false
     defaultFrom: admin@geonode.cluster.local
+  oAuth2:
+    apiKey: ''
+    clientId: ''
+    secret: ''
+  apiKeys:
+    mapbox: ''
+    bingMaps: ''
+    googleMaps: ''
+  tastyPie: 
+    apiLockDown: false
+    apiKey: ''
   accessControl:
     lockdownGeoNode: false
     xFrameOptions: SAMEORIGIN
@@ -106,7 +121,10 @@ configs:
       url: http://elasticsearch:9200/
       indexName: haystack
     resultsPerPage: 200
-  geoserver:      
+  geoserver:
+    admin:
+      user: ''
+      password: ''
     ogcRequest:
       timeout: 30
       maxRetries: 1
@@ -156,14 +174,6 @@ configs:
   
 secrets:
   django: M<]M/$CpU9YXR5nNmPqCj73UXi,n>)_X,[zRj6T=2Sj==Z}vWd
-  admin:
-    geonode:
-      email: admin@geonode.cluster.local
-      user: admin
-      password: geonodepwd
-    geoserver:
-      user: admin
-      password: geoserverpwd
   postgres:   # Change
     host: lrnpdbmsd05.sgb.local
     port: 5432
@@ -188,17 +198,7 @@ secrets:
     password: null
     useTLS: false
     useSSL: false
-  oAuth2:
-    apiKey: ""
-    clientId: clientid
-    secret: clientsecret
-  apiKeys:
-    mapbox: ''
-    bingMaps: ''
-    googleMaps: ''
-    
-
-
+  
 # GeoNode Volumes
 volumes:
   # nginxConfd:

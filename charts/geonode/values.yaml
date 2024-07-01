@@ -36,7 +36,9 @@ configs:
   debug: false
   forceReinit: false
   invokeLogStdout: true
-  cacheBustingStaticEnabled: false
+  cacheBustingStaticEnabled: false  
+  django: 
+    secretKey: ''
   admin:
     email: admin@geonode.cluster.local
     user: admin
@@ -73,10 +75,12 @@ configs:
     apiKey: ''
     clientId: ''
     secret: ''
-  apiKeys:
-    mapbox: ''
-    bingMaps: ''
-    googleMaps: ''
+  gisClient:
+    layerPreviewLibrary: mapstore
+    apiKeys:
+      mapbox: ''
+      bingMaps: ''
+      googleMaps: ''
   tastyPie: 
     apiLockDown: false
     apiKey: ''
@@ -173,7 +177,6 @@ configs:
         profileMemberAttr: uniqueMember
   
 secrets:
-  django: M<]M/$CpU9YXR5nNmPqCj73UXi,n>)_X,[zRj6T=2Sj==Z}vWd
   postgres:   # Change
     host: lrnpdbmsd05.sgb.local
     port: 5432

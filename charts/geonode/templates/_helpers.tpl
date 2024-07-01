@@ -103,6 +103,10 @@ Define PVC names
 {{/*
 Define Secret names
 */}}
+{{- define "geonode.main-secret" -}}
+{{- printf "%s-main" (include "geonode.name" .) }}
+{{- end }}
+
 {{- define "geonode.recaptcha-secret" -}}
 {{- printf "%s-recaptcha" (include "geonode.name" .) }}
 {{- end }}

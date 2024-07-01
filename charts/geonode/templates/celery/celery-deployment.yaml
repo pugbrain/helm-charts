@@ -33,6 +33,8 @@ spec:
             - configMapRef:
                 name: {{ include "geonode.configmap" . }}
             - secretRef:
+                name: {{ include "geonode.main-secret" . }}
+            - secretRef:
                 name: {{ include "geonode.name" . }}-postgres
             {{- if .Values.configs.recaptcha.enabled }}
             - secretRef:

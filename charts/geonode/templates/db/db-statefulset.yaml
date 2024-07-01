@@ -28,7 +28,7 @@ spec:
             - max_connections=$(POSTGRESQL_MAX_CONNECTIONS)
           envFrom:
             - secretRef:
-                name: {{ include "geonode.name" . }}-postgres  
+                name: {{ include "geonode.database-secret" . }}
           image: {{ .Values.services.db.image.repository }}:{{ .Values.services.db.image.tag | default "latest" }}
           imagePullPolicy: {{ .Values.services.db.image.pullPolicy }}
           livenessProbe:
@@ -36,7 +36,7 @@ spec:
               command:
                 - pg_isready
                 - '-U'
-                - {{ .Values.secrets.postgres.user | quote }}
+                - {{ .Values.services.db.serverParams.user | quote }}
           name: {{ .Values.services.db.name }}
           securityContext:
             {{- toYaml .Values.services.db.securityContext | nindent 12 }}

@@ -33,7 +33,7 @@ spec:
             - secretRef:
                 name: {{ include "geonode.main-secret" . }}
             - secretRef:
-                name: {{ include "geonode.name" . }}-postgres
+                name: {{ include "geonode.database-secret" . }}
           readinessProbe:
             exec:
               command:

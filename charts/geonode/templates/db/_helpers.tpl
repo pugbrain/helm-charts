@@ -4,8 +4,8 @@ DB Common labels
 {{- define "db.labels" -}}
 helm.sh/chart: {{ include "geonode.chart" . }}
 {{ include "db.selectorLabels" . }}
-{{- if .Values.services.db.tag }}
-app.kubernetes.io/version: {{ .Values.services.db.tag | quote }}
+{{- if .Values.services.db.image.tag }}
+app.kubernetes.io/version: {{ .Values.services.db.image.tag | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.openshift.io/runtime: postgresql
@@ -26,7 +26,11 @@ DB Service - hostname
 */}}
 {{- define "db.hostname" -}}
 {{- if .Values.services.db.external }}
-{{- .Values.secrets.postgres.host }}
+{{- $dbHost := .Values.configs.postgres.host -}}
+{{- if not $dbHost }}
+{{- fail "If services.db.external is True, you must set a valid PostgreSQL hostname" -}}
+{{- end }} 
+{{- $dbHost }}
 {{- else -}}
 {{- printf "%s.%s.svc.cluster.local" .Values.services.db.name .Release.Namespace -}}
 {{- end }}

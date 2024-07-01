@@ -8,7 +8,7 @@ metadata:
 spec:
   ports:
     - name: "postgresql-svc"
-      port: {{ .Values.services.db.servicePort }}
+      port: {{ .Values.configs.postgres.port }}
       targetPort: postgresql
   selector:
     {{- include "db.selectorLabels" . | nindent 6 }}

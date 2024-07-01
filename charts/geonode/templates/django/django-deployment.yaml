@@ -41,9 +41,11 @@ spec:
             - secretRef:
                 name: {{ include "geonode.main-secret" . }}
             - secretRef:
-                name: {{ include "geonode.name" . }}-postgres
+                name: {{ include "geonode.database-secret" . }}
+            {{- if .Values.configs.mail.enabled }}
             - secretRef:
                 name: {{ include "geonode.mail-secret" . }}
+            {{- end }}
             {{- if .Values.configs.recaptcha.enabled }}
             - secretRef:
                 name: {{ include "geonode.recaptcha-secret" . }}
@@ -98,14 +100,20 @@ spec:
               name: tmp
             {{- end }}
       initContainers:
-        # TODO: melhorar este script - talvez usar imagem do geonode com envs
-        - name: wait-for-dbs
-          image: {{ .Values.services.db.image.repository }}:{{ .Values.services.db.image.tag | default "latest" }}
-          command: [
-            'sh', 
-            '-c', 
-            "PGPASSWORD={{ .Values.secrets.postgres.db.password }}; until pg_isready -d {{ .Values.secrets.postgres.db.name }} -U {{ .Values.secrets.postgres.db.user }} -h {{ include "db.hostname" . }}; do echo waiting for database; sleep 2; done"
-          ]
+        {{- $dbHost := include "db.hostname" . -}}
+        {{- $dbPort := .Values.configs.postgres.port -}}
+        {{- with .Values.services.db }}
+        - name: wait-for-dbs          
+          image: {{ .image.repository }}:{{ .image.tag }}
+          imagePullPolicy: {{ .image.pullPolicy }}
+          command:
+            - sh
+            - '-c'
+            - >
+              until pg_isready -h {{ $dbHost }} -p {{ $dbPort | toString }}
+                do echo waiting for database; sleep 2; 
+              done
+        {{- end }}
       serviceAccountName: {{ include "geonode.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.services.django.podSecurityContext | nindent 8 }}

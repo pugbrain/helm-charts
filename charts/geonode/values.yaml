@@ -167,6 +167,22 @@ configs:
   celery:
     brokerURL: ""
   #   scheduler:
+  postgres: 
+    host: ''
+    port: 5432
+    clientParams:
+      maxAge: 0
+      timeOut: 5
+    db:
+      name: geonode
+      user: geonode
+      password: geonode@123
+      schema: public
+    geoDb:
+      name: geonode_data
+      user: geonode_data
+      password: geonode_data@123
+      schema: public
   ldap:
     enabled: false
     serverURL: ldap://<the_ldap_server>
@@ -181,25 +197,6 @@ configs:
         dn: cn=groups,dc=ad,dc=example,dc=org
         filterStr: (|(cn=abt1)(cn=abt2)(cn=abt3)(cn=abt4)(cn=abt5)(cn=abt6))
         profileMemberAttr: uniqueMember
-  
-secrets:
-  postgres:   # Change
-    host: lrnpdbmsd05.sgb.local
-    port: 5432
-    user: postgres
-    password: postgrespwd
-    maxAge: 0
-    timeOut: 5
-    db:
-      name: geosgb
-      user: geosgb
-      password: 50HyEkzMHuAKpcQ8e0Nz
-      schema: public
-    geoDb:
-      name: geosgb_data
-      user: geosgb_data
-      password: uMP6L8s6OIf7142hoYDd
-      schema: public
   
 # GeoNode Volumes
 volumes:
@@ -509,13 +506,14 @@ services:
   db:
     name: postgis
     external: false
-    servicePort: 5432
-    maxConnections: 200
+    serverParams:
+      user: postgres
+      password: postgrespwd
+      maxConnections: 200
     image:
       repository: geonode/postgis
       pullPolicy: IfNotPresent
-      tag: "15.3-v1"
-    
+      tag: "15.3-v1"    
     resources:
       limits:
         cpu: 500m

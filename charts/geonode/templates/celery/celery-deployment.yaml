@@ -35,9 +35,11 @@ spec:
             - secretRef:
                 name: {{ include "geonode.main-secret" . }}
             - secretRef:
-                name: {{ include "geonode.name" . }}-postgres
+                name: {{ include "geonode.database-secret" . }}
+            {{- if .Values.configs.mail.enabled }}
             - secretRef:
                 name: {{ include "geonode.mail-secret" . }}
+            {{- end }}
             {{- if .Values.configs.recaptcha.enabled }}
             - secretRef:
                 name: {{ include "geonode.recaptcha-secret" . }}

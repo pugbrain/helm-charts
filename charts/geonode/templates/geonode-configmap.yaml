@@ -214,9 +214,6 @@ data:
   # CELERY__LOG_FILE: "/var/log/celery.log"
   # CELERY__WORKER_NAME: "worker1@%h"
 
-  # PostgreSQL
-  POSTGRESQL_MAX_CONNECTIONS: {{ .Values.services.db.maxConnections | quote }}
-
   # Common containers restart policy
   # RESTART_POLICY_CONDITION: on-failure
   # RESTART_POLICY_DELAY: 5s

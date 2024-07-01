@@ -36,7 +36,26 @@ configs:
   debug: false
   forceReinit: false
   invokeLogStdout: true
-  cacheBustingStaticEnabled: false  
+  cacheBustingStaticEnabled: false
+  backupRestore:
+    suspend: true
+    schedule: '@weekly'
+    historyLimit:
+      success: 5
+      fail: 5
+    config:
+      geoserver:
+        dataDir:
+          excludeFilePath: []
+        dumpVectorData: true
+        dumpRasterData: true
+        data:
+          dtFilter: ''
+          layernameFilter: []
+          layernameExcludeFilter: []
+      fixtures:
+        apps: [contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,user_messages,geonode_themes,geoapps,favorite,geonode_client]
+        dumps: [contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,user_messages,geonode_themes,geoapps,favorite,geonode_client]
   django: 
     secretKey: ''
   admin:

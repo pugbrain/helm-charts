@@ -59,7 +59,7 @@ spec:
                 name: {{ include "geonode.memcached-secret" . }}
             {{- end }}
           {{- with .Values.services.django.image }}
-          image: {{ .repository }}:{{ .tag }}
+          image: {{ .repository }}:{{ .tag | default $.Chart.AppVersion }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           name: {{ .Values.services.django.name }}
@@ -92,8 +92,6 @@ spec:
               name: statics
             - mountPath: {{ .geoserverData.mountPath }}
               name: geoserver-data-dir
-            - mountPath: {{ .backupRestore.mountPath }}
-              name: backup-restore
             - mountPath: {{ .data.mountPath }}
               name: data
             - mountPath: {{ .tmp.mountPath }}
@@ -142,9 +140,6 @@ spec:
         - name: geoserver-data-dir
           persistentVolumeClaim:
             claimName: {{ include "geonode.geoserver-data-pvc" . }}
-        - name: backup-restore
-          persistentVolumeClaim:
-            claimName: {{ include "geonode.backup-restore-pvc" . }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "geonode.data-pvc" . }}

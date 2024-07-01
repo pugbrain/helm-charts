@@ -68,9 +68,15 @@ configs:
     mosaicEnabled: false
     maxUploadSize: 5368709120
     maxParallelUploadsPerUser: 5
-  email:
+  mail:
     enabled: false
-    defaultFrom: admin@geonode.cluster.local
+    defaultFrom: admin@localhost
+    host: localhost
+    port: 25
+    user: ''
+    password: ''
+    useTLS: false
+    useSSL: false
   oAuth2:
     apiKey: ''
     clientId: ''
@@ -194,13 +200,6 @@ secrets:
       user: geosgb_data
       password: uMP6L8s6OIf7142hoYDd
       schema: public
-  email:
-    host: localhost
-    port: 25
-    user: null
-    password: null
-    useTLS: false
-    useSSL: false
   
 # GeoNode Volumes
 volumes:

@@ -107,6 +107,10 @@ Define Secret names
 {{- printf "%s-main" (include "geonode.name" .) }}
 {{- end }}
 
+{{- define "geonode.mail-secret" -}}
+{{- printf "%s-mail" (include "geonode.name" .) }}
+{{- end }}
+
 {{- define "geonode.recaptcha-secret" -}}
 {{- printf "%s-recaptcha" (include "geonode.name" .) }}
 {{- end }}

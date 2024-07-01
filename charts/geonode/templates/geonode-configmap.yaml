@@ -105,20 +105,13 @@ data:
   # #################
 
   # EMAIL Notifications
-  # TODO: Ser if enabled
-  {{ with .Values.configs.email }}
+  {{ with .Values.configs.mail }}
   EMAIL_ENABLE: {{ .enabled | toString | title | quote }}
+  {{- if .enabled }}
   DEFAULT_FROM_EMAIL: {{ .defaultFrom }} 
-  {{ end }}
-  {{ with .Values.secrets.email }}
   DJANGO_EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
-  DJANGO_EMAIL_HOST: {{ .host }}
-  DJANGO_EMAIL_PORT: {{ .port | quote }}
-  DJANGO_EMAIL_HOST_USER: {{ .user }}
-  DJANGO_EMAIL_HOST_PASSWORD: {{ .password }} 
-  DJANGO_EMAIL_USE_TLS: {{ .useTLS | toString | title | quote }}
-  DJANGO_EMAIL_USE_SSL: {{ .useSSL | toString | title | quote }}
-  {{ end }}
+  {{- end }}
+  {{- end }}
 
   # Session/Access Control
   {{ with .Values.configs.accessControl }}

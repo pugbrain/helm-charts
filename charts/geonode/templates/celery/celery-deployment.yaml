@@ -75,6 +75,7 @@ spec:
       initContainers:
         - name: wait-for-django
           image: docker.io/library/busybox:latest
+          imagePullPolicy: IfNotPresent
           command: 
             - 'sh'
             - '-c' 

@@ -53,6 +53,7 @@ spec:
       initContainers:
         - name: wait-for-geoserevr
           image: docker.io/library/busybox:latest
+          imagePullPolicy: IfNotPresent
           command: 
             - 'sh'
             - '-c'

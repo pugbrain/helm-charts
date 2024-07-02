@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "geonode.configmap" . }}-uwsgi
+  name: {{ include "geonode.uwsgi-override" . }}
 data:
   uwsgi.ini: |-
     [uwsgi]

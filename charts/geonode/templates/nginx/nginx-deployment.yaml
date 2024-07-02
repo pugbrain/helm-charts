@@ -29,7 +29,7 @@ spec:
           {{- end }}
           envFrom:
             - configMapRef:
-                name: {{ include "geonode.configmap" . }}
+                name: {{ include "geonode.environment" . }}
           securityContext:
             {{- toYaml .Values.services.nginx.securityContext | nindent 12 }}
           ports:

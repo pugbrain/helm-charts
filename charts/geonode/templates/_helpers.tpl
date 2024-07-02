@@ -63,10 +63,18 @@ Create the name of the service account to use
 
 
 {{/*
-Default configmap
+Define configmaps
 */}}
-{{- define "geonode.configmap" -}}
-{{- printf "%s-configmap" (include "geonode.name" .) }}
+{{- define "geonode.environment" -}}
+{{- printf "%s-environment" (include "geonode.name" .) }}
+{{- end }}
+
+{{- define "geonode.uwsgi-override" -}}
+{{- printf "%s-wsgi-override" (include "geonode.name" .) }}
+{{- end }}
+
+{{- define "geonode.backup-restore-settings" -}}
+{{- printf "%s-backup-restore-settings" (include "geonode.name" .) }}
 {{- end }}
 
 

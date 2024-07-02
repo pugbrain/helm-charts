@@ -31,7 +31,7 @@ spec:
               value: "true"
           envFrom:
             - configMapRef:
-                name: {{ include "geonode.configmap" . }}
+                name: {{ include "geonode.environment" . }}
             - secretRef:
                 name: {{ include "geonode.main-secret" . }}
             - secretRef:

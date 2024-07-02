@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "geonode.configmap" . }}
+  name: {{ include "geonode.environment" . }}
 data:
   COMPOSE_PROJECT_NAME: {{ .Values.configs.projectName }}   # Included in geoserver's entrypoint
   # See https://github.com/containers/podman/iss TIMEENAues/13889

@@ -44,7 +44,7 @@ spec:
                   value: "false"
               envFrom:
                 - configMapRef:
-                    name: {{ include "geonode.configmap" . }}
+                    name: {{ include "geonode.environment" . }}
                 - secretRef:
                     name: {{ include "geonode.main-secret" . }}
                 - secretRef:
@@ -119,6 +119,6 @@ spec:
                 claimName: {{ include "geonode.tmp-pvc" . }}
             - name: backup-restore-settings
               configMap:
-                name: {{ include "geonode.configmap" . }}-backup
+                name: {{ include "geonode.backup-restore-settings" . }}
 
 

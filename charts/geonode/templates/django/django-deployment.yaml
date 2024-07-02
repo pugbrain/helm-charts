@@ -37,7 +37,7 @@ spec:
               value: "false"
           envFrom:
             - configMapRef:
-                name: {{ include "geonode.configmap" . }}
+                name: {{ include "geonode.environment" . }}
             - secretRef:
                 name: {{ include "geonode.main-secret" . }}
             - secretRef:
@@ -132,7 +132,7 @@ spec:
         {{- if .Values.services.django.uwsgi.override }}
         - name: uwsgi
           configMap:
-            name: {{ include "geonode.configmap" . }}-uwsgi
+            name: {{ include "geonode.uwsgi-override" . }}
         {{- end }}
         - name: statics
           persistentVolumeClaim:

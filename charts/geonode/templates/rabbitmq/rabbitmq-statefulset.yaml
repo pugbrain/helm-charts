@@ -27,6 +27,11 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "geonode.environment" . }}
+          readinessProbe:
+            tcpSocket:
+              port: amqp
+            periodSeconds: 10
+            failureThreshold: 3
           securityContext:
             {{- toYaml .Values.services.rabbitmq.securityContext | nindent 12 }}
           ports:

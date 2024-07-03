@@ -34,17 +34,22 @@ spec:
                 name: {{ include "geonode.main-secret" . }}
             - secretRef:
                 name: {{ include "geonode.database-secret" . }}
+          livenessProbe:
+            tcpSocket:
+              port: http-alt
+            periodSeconds: 10
+            failureThreshold: 3
+            initialDelaySeconds: 30
           readinessProbe:
             exec:
               command:
-                - wget
-                - '-O-'
-                - '--spider'
-                - http://localhost:8080/geoserver/ows
-            failureThreshold: 2
+                - sh
+                - '-c'
+                - wget --quiet --spider http://localhost:8080/geoserver/ows
+            failureThreshold: 3
             initialDelaySeconds: 60
-            periodSeconds: 60
-            timeoutSeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
           securityContext:
             {{- toYaml .Values.services.geoserver.securityContext | nindent 12 }}
           ports:

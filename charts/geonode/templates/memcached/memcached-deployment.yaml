@@ -32,13 +32,18 @@ spec:
           imagePullPolicy: {{ .Values.services.memcached.image.pullPolicy }}
           name: {{ .Values.services.memcached.name }}
           livenessProbe:
+            tcpSocket:
+              port: memcached
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
             exec:
               command:
-                - nc -z 127.0.0.1 11211
-            failureThreshold: 5
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            timeoutSeconds: 30
+                - sh
+                - '-c'
+                - echo "quit" | nc 127.0.0.1 11211
+            periodSeconds: 10
+            failureThreshold: 3
           securityContext:
             {{- toYaml .Values.services.memcached.securityContext | nindent 12 }}
           ports:

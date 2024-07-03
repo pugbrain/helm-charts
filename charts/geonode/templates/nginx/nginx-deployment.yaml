@@ -39,6 +39,20 @@ spec:
             - name: https
               containerPort: 443
               protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - '-c'
+                - wget --quiet --spider  http://127.0.0.1
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.services.nginx.resources | nindent 12 }}
           {{- with .Values.volumes }}

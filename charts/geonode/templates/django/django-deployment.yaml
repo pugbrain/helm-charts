@@ -64,15 +64,19 @@ spec:
           {{- end }}
           name: {{ .Values.services.django.name }}
           livenessProbe:
+            tcpSocket:
+              port: wsgi
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
             exec:
               command:
-                - |-
-                  curl --fail --silent --write-out 'HTTP CODE : %{http_code}
-                  ' --output /dev/null http://127.0.0.1:8000/
-            failureThreshold: 1
-            initialDelaySeconds: 60
-            periodSeconds: 60
-            timeoutSeconds: 10
+                - sh
+                - '-c'
+                - wget --quiet --spider http://localhost:8000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 3
           securityContext:
             {{- toYaml .Values.services.django.securityContext | nindent 12 }}
           ports:

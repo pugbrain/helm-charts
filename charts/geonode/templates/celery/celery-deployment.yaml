@@ -29,6 +29,8 @@ spec:
           env:
             - name: IS_CELERY
               value: "true"
+          # TODO: Create readiness and/or liveness probe
+          # Celery Error: No nodes replied within time constraint
           envFrom:
             - configMapRef:
                 name: {{ include "geonode.environment" . }}

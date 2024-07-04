@@ -1,4 +1,12 @@
 {{/*
+Create a default fully qualified app name.
+*/}}
+{{- define "db.fullname" -}}
+{{- $name := ( include "geonode.fullname" . ) | trunc 60 | trimSuffix "-" -}}
+{{- printf "%s-db" $name }}
+{{- end }}
+
+{{/*
 DB Common labels
 */}}
 {{- define "db.labels" -}}
@@ -10,15 +18,15 @@ app.kubernetes.io/version: {{ .Values.services.db.image.tag | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.openshift.io/runtime: postgresql
 app.kubernetes.io/component: database
-app.kubernetes.io/part-of: geonode
+app.kubernetes.io/part-of: {{ .Chart.Name }}
 {{- end }}
 
 {{/*
 DB Selector labels
 */}}
 {{- define "db.selectorLabels" -}}
-app.kubernetes.io/name: {{ .Values.services.db.name }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/name: postgis
+app.kubernetes.io/instance: {{ printf "%s-%s" ( .Release.Namespace ) ( include "db.fullname" . ) }}
 {{- end }}
 
 {{/*
@@ -32,6 +40,6 @@ DB Service - hostname
 {{- end }} 
 {{- $dbHost }}
 {{- else -}}
-{{- printf "%s.%s.svc.cluster.local" .Values.services.db.name .Release.Namespace -}}
+{{- printf "%s.%s.svc.cluster.local" ( include "db.fullname" . ) .Release.Namespace -}}
 {{- end }}
 {{- end }}

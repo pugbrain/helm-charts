@@ -1,8 +1,9 @@
 {{- if not .Values.services.db.external }}
+{{- $dbFullName := include "db.fullname" . -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.services.db.name }}
+  name: {{ $dbFullName }}
   labels:
      {{- include "db.labels" . | nindent 4 }}
 spec:
@@ -10,7 +11,7 @@ spec:
   selector:
     matchLabels:
       {{- include "db.selectorLabels" . | nindent 6 }}
-  serviceName: {{ .Values.services.db.name }}
+  serviceName: {{ $dbFullName }}
   template:
     metadata:
       {{- with .Values.services.db.podAnnotations }}
@@ -37,7 +38,7 @@ spec:
                 - pg_isready
                 - '-U'
                 - {{ .Values.services.db.serverParams.user | quote }}
-          name: {{ .Values.services.db.name }}
+          name: {{ $dbFullName }}
           securityContext:
             {{- toYaml .Values.services.db.securityContext | nindent 12 }}
           ports:

@@ -4,7 +4,7 @@ kind: Service
 metadata:
   labels:
     {{- include "db.labels" . | nindent 4 }}
-  name: {{ .Values.services.db.name }}
+  name: {{ include "db.fullname" . }}
 spec:
   ports:
     - name: "postgresql-svc"

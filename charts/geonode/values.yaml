@@ -248,7 +248,6 @@ volumes:
 # GeoNode Services
 services:
   nginx:
-    name: geonode
     image:
       repository: geonode/nginx
       pullPolicy: IfNotPresent
@@ -523,7 +522,6 @@ services:
     affinity: {}
 
   db:
-    name: postgis
     external: false
     serverParams:
       user: postgres

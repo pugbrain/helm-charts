@@ -1,7 +1,8 @@
+{{- $fullName := include "nginx.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.services.nginx.name }}
+  name: {{ $fullName }}
   labels:
     {{- include "nginx.labels" . | nindent 4 }}
 spec:
@@ -22,7 +23,7 @@ spec:
         {{- include "nginx.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - name: {{ .Values.services.nginx.name }}
+        - name: {{ $fullName }}
           {{- with .Values.services.nginx.image }}
           image: {{ .repository }}:{{ .tag }}
           imagePullPolicy: {{ .pullPolicy }}
@@ -44,15 +45,15 @@ spec:
               port: http
             periodSeconds: 10
             failureThreshold: 3
-          readinessProbe:
-            exec:
-              command:
-                - sh
-                - '-c'
-                - wget --quiet --spider  http://127.0.0.1
-            initialDelaySeconds: 10
-            periodSeconds: 20
-            failureThreshold: 3
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #       - sh
+          #       - '-c'
+          #       - wget --quiet --spider  http://127.0.0.1
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 20
+          #   failureThreshold: 3
           resources:
             {{- toYaml .Values.services.nginx.resources | nindent 12 }}
           {{- with .Values.volumes }}

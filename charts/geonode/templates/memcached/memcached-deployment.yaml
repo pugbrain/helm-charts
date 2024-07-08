@@ -36,14 +36,14 @@ spec:
               port: memcached
             periodSeconds: 10
             failureThreshold: 3
-          readinessProbe:
-            exec:
-              command:
-                - sh
-                - '-c'
-                - echo "quit" | nc 127.0.0.1 11211
-            periodSeconds: 10
-            failureThreshold: 3
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #       - sh
+          #       - '-c'
+          #       - echo "quit" | nc 127.0.0.1 11211
+          #   periodSeconds: 10
+          #   failureThreshold: 3
           securityContext:
             {{- toYaml .Values.services.memcached.securityContext | nindent 12 }}
           ports:

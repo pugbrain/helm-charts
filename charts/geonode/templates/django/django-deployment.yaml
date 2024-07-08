@@ -68,16 +68,16 @@ spec:
               port: wsgi
             periodSeconds: 20
             failureThreshold: 3
-            initialDelaySeconds: 30
-          readinessProbe:
-            exec:
-              command:
-                - sh
-                - '-c'
-                - wget --quiet --spider http://localhost:8000
-            initialDelaySeconds: 60
-            periodSeconds: 20
-            failureThreshold: 3
+            initialDelaySeconds: 120
+          # readinessProbe:
+          #   exec:s
+          #     command:
+          #       - sh
+          #       - '-c'
+          #       - wget --quiet --spider http://localhost:8000
+          #   initialDelaySeconds: 120
+          #   periodSeconds: 20
+          #   failureThreshold: 3
           securityContext:
             {{- toYaml .Values.services.django.securityContext | nindent 12 }}
           ports:

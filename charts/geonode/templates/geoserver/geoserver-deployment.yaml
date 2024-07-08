@@ -40,16 +40,16 @@ spec:
             periodSeconds: 10
             failureThreshold: 3
             initialDelaySeconds: 30
-          readinessProbe:
-            exec:
-              command:
-                - sh
-                - '-c'
-                - wget --quiet --spider http://localhost:8080/geoserver/ows
-            failureThreshold: 3
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #       - sh
+          #       - '-c'
+          #       - wget --quiet --spider http://localhost:8080/geoserver/ows
+          #   failureThreshold: 3
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
           securityContext:
             {{- toYaml .Values.services.geoserver.securityContext | nindent 12 }}
           ports:

@@ -34,11 +34,9 @@ spec:
                 - sh
                 - '-c'
               args:
-                - python 
-                - manage.py
-                - backup
-                - '--backup-dir={{ .Values.volumes.backupRestore.mountPath }}' 
-                - '--config=/var/run/geonode/backup-restore/settings.ini>'
+                - > 
+                  python manage.py backup --backup-dir={{ .Values.volumes.backupRestore.mountPath }} 
+                  --config=/var/run/geonode/backup-restore/settings.ini --force
               env:
                 - name: IS_CELERY
                   value: "false"

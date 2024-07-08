@@ -465,13 +465,7 @@ services:
       pullPolicy: IfNotPresent
       tag: "1.6-alpine"
     
-    resources: 
-      limits:
-        cpu: 200m
-        memory: 256Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+    resources: {}
 
     podAnnotations: {}
 
@@ -495,13 +489,7 @@ services:
       pullPolicy: IfNotPresent
       tag: "3.7-alpine"
     
-    resources:
-      limits:
-        cpu: 200m
-        memory: 256Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+    resources: {}
     
     volumes:
       storage: 1Gi
@@ -531,13 +519,7 @@ services:
       repository: geonode/postgis
       pullPolicy: IfNotPresent
       tag: "15.3-v1"    
-    resources:
-      limits:
-        cpu: 500m
-        memory: 1Gi
-      requests:
-        cpu: 200m
-        memory: 256Mi
+    resources: {}
     
     volumes:
       data:

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: geonode
-version: 0.3.5
-description: |-
+version: 0.3.6
+description: >
   GeoNode is a web-based application and platform for developing geospatial information 
   systems (GIS) and for deploying spatial data infrastructures (SDI).
 type: application

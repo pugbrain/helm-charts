@@ -1,3 +1,4 @@
+{{- $geonodeBaseDir := printf "/usr/src/%s" .Values.configs.projectName -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,14 +24,14 @@ spec:
     spec:
       containers:
         - command:
-            - /usr/src/{{ .Values.configs.projectName }}/entrypoint.sh          
+            - {{ printf "%s/entrypoint.sh" $geonodeBaseDir }}         
           args:
             - uwsgi
             - "--ini"
             {{- if .Values.services.django.uwsgi.override }}
             - /var/run/uwsgi/uwsgi.ini
             {{- else }}
-            - /usr/src/{{ .Values.configs.projectName }}/uwsgi.ini
+            - {{ printf "%s/uwsgi.ini" $geonodeBaseDir }}
             {{- end }}
           env:
             - name: IS_CELERY
@@ -92,6 +93,12 @@ spec:
               mountPath: /var/run/uwsgi
               readOnly: true
             {{- end }}
+            {{- if .Values.configs.django.overrideSettings }}
+            - name: local-settings
+              mountPath: {{ printf "%s/geonode/local_settings.py" $geonodeBaseDir }}
+              subPath: local_settings.py
+              readOnly: true
+            {{- end }}
             {{- with .Values.volumes }}
             - mountPath: {{ .statics.mountPath }}
               name: statics
@@ -138,6 +145,11 @@ spec:
         - name: uwsgi
           configMap:
             name: {{ include "geonode.uwsgi-override" . }}
+        {{- end }}
+        {{- if .Values.configs.django.overrideSettings }}
+        - name: local-settings
+          configMap:
+            name: {{ include "geonode.settings-local" . }}
         {{- end }}
         - name: statics
           persistentVolumeClaim:

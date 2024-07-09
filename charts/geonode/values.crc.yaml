@@ -1,0 +1,19 @@
+serviceAccount:
+  name: geonode 
+services:
+  nginx:
+    config:
+      resolver: 10.217.4.10
+configs:
+  admin:
+    password: 123456
+  oAuth2:
+    apiKey: abcderfhijklmnopqrstuvwxyz
+    clientId: abc
+    secret: 1234567890
+  django:
+    secretKey: M<]M/$CpU9YXR5nNmPqCj73UXi,n>) X,[zRj6T=2Sj==Z}vWd
+    overrideSettings: true
+  # mail:
+  #   enabled: true
+

@@ -58,6 +58,7 @@ configs:
         dumps: [contenttypes,auth,people,groups,account,guardian,admin,actstream,announcements,avatar,base,documents,geoserver,invitations,pinax_notifications,harvesting,services,layers,maps,oauth2_provider,sites,socialaccount,taggit,tastypie,upload,user_messages,geonode_themes,geoapps,favorite,geonode_client]
   django: 
     secretKey: ''
+    overrideSettings: false
   admin:
     email: admin@geonode.cluster.local
     user: admin

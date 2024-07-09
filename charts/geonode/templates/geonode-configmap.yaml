@@ -20,8 +20,8 @@ data:
   # Django
   LANGUAGE_CODE: {{ .Values.configs.languageCode }}
   LANGUAGES: (('en-us','English'),('es-es','Espanol'))
-
-  DJANGO_SETTINGS_MODULE: {{ .Values.configs.projectName }}.settings
+  
+  DJANGO_SETTINGS_MODULE: {{ printf "%s.%s" .Values.configs.projectName ( .Values.configs.django.overrideSettings | ternary "local_settings" "settings" ) }}
   GEONODE_INSTANCE_NAME: geonode # serviço (docker, k8s) onde está o NGINX
 
   # #################

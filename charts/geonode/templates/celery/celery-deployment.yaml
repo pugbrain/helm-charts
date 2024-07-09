@@ -1,3 +1,4 @@
+{{- $geonodeBaseDir := printf "/usr/src/%s" .Values.configs.projectName -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,7 +26,7 @@ spec:
         - args:
             - celery-cmd
           command:
-            - /usr/src/{{ .Values.configs.projectName }}/entrypoint.sh
+            - {{ printf "%s/entrypoint.sh" $geonodeBaseDir }}
           env:
             - name: IS_CELERY
               value: "true"
@@ -74,6 +75,12 @@ spec:
             - mountPath: {{ .tmp.mountPath }}
               name: tmp
             {{- end }}
+            {{- if .Values.configs.django.overrideSettings }}
+            - name: local-settings
+              mountPath: {{ printf "%s/geonode/local_settings.py" $geonodeBaseDir }}
+              subPath: local_settings.py
+              readOnly: true
+            {{- end }}
       initContainers:
         - name: wait-for-django
           image: docker.io/library/busybox:latest
@@ -114,4 +121,9 @@ spec:
         - name: tmp
           persistentVolumeClaim:
             claimName: {{ include "geonode.tmp-pvc" . }}
+        {{- if .Values.configs.django.overrideSettings }}
+        - name: local-settings
+          configMap:
+            name: {{ include "geonode.settings-local" . }}
+        {{- end }}
 status: {}

@@ -29,3 +29,6 @@ notes.txt
 
 # templates/celery/
 *.notused
+
+# Draft folder
+draft

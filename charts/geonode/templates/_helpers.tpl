@@ -73,6 +73,10 @@ Define configmaps
 {{- printf "%s-wsgi-override" (include "geonode.name" .) }}
 {{- end }}
 
+{{- define "geonode.settings-local" -}}
+{{- printf "%s-settings-local" (include "geonode.name" .) }}
+{{- end }}
+
 {{- define "geonode.backup-restore-settings" -}}
 {{- printf "%s-backup-restore-settings" (include "geonode.name" .) }}
 {{- end }}

@@ -1,4 +1,4 @@
-{{- if .Values.configs.django.overrideSettings }}
+{{- if .Values.configs.django.settings.override }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,33 +7,5 @@ data:
   local_settings.py: |-
     from geonode.settings import *
 
-    # Example: AllAuth Customs
-    ACCOUNT_OPEN_SIGNUP = True
-    ACCOUNT_EMAIL_REQUIRED = True
-    ACCOUNT_EMAIL_VERIFICATION = 'optional'
-    ACCOUNT_EMAIL_CONFIRMATION_EMAIL = True
-    ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
-    ACCOUNT_CONFIRM_EMAIL_ON_GET = True
-    ACCOUNT_APPROVAL_REQUIRED = True
-
-    SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
-
-    SOCIALACCOUNT_AUTO_SIGNUP = False
-
-    INSTALLED_APPS += (
-        'allauth.socialaccount.providers.orcid',
-    )
-
-    SOCIALACCOUNT_PROVIDERS = {
-        'orcid': {
-            # Base domain of the API. Default value: 'orcid.org', for the production API
-            'BASE_DOMAIN':'sandbox.orcid.org',  # for the sandbox API
-            # Member API or Public API? Default: False (for the public API)
-            'MEMBER_API': False,  # for the member API
-        }
-    }
-
-    SOCIALACCOUNT_PROFILE_EXTRACTORS = {
-        "orcid": "geonode.people.profileextractors.OpenIDExtractor"
-    }
+    {{ .Values.configs.django.settings.content | indent 4 | trim }}
 {{- end }}

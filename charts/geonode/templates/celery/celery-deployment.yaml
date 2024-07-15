@@ -75,7 +75,7 @@ spec:
             - mountPath: {{ .tmp.mountPath }}
               name: tmp
             {{- end }}
-            {{- if .Values.configs.django.overrideSettings }}
+            {{- if .Values.configs.django.settings.override }}
             - name: local-settings
               mountPath: {{ printf "%s/geonode/local_settings.py" $geonodeBaseDir }}
               subPath: local_settings.py
@@ -121,7 +121,7 @@ spec:
         - name: tmp
           persistentVolumeClaim:
             claimName: {{ include "geonode.tmp-pvc" . }}
-        {{- if .Values.configs.django.overrideSettings }}
+        {{- if .Values.configs.django.settings.override }}
         - name: local-settings
           configMap:
             name: {{ include "geonode.settings-local" . }}

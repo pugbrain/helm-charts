@@ -1,0 +1,43 @@
+{{- $firstHost := first .Values.ingress.hosts -}}
+{{- $firstPath := (first $firstHost.paths).path -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "geoserver.fullname" . }}
+data:
+  {{- with .Values.config.jvm }}            
+  {{- if .JAVA_OPTS }}
+  JAVA_OPTS: {{ .JAVA_OPTS | quote }}
+  {{- end }}
+  {{- if .CATALINA_OPTS }}
+  CATALINA_OPTS: {{ .CATALINA_OPTS | quote }}
+  {{- end }}
+  {{- if .GEOSERVER_OPTS }}
+  GEOSERVER_OPTS: {{ .GEOSERVER_OPTS | quote }}
+  {{- end }}
+  {{- end }}
+
+  # TODO: Adicionar suporte a TLS, para selecionar http ou https, via ingress
+  PROXY_BASE_URL: {{ .Values.config.proxyBaseURL | default (cat "http://" $firstHost.host $firstPath | replace " " "") }}        
+  {{- if .Values.pvc.data.enabled }}
+  # Geoserver extra volume
+  GEOSERVER_DATA_DIR: {{ .Values.pvc.data.storage.mountPath }}
+  {{- end }}
+  {{- if .Values.pvc.gwc.enabled }}
+  # Geowebcache extra volume
+  GEOWEBCACHE_CACHE_DIR: {{ .Values.pvc.gwc.storage.mountPath }}
+  {{- end }}
+  GEOSERVER_CONSOLE_DISABLED: {{ .Values.config.console.disabled | toString | lower | quote  }}
+  # CSRF
+  GEOSERVER_CSRF_DISABLED: {{ .Values.config.csrf.disabled | toString | lower | quote  }}  
+  {{- if not (empty .Values.config.csrf.whitelist) }}
+  GEOSERVER_CSRF_WHITELIST: {{ join "," .Values.config.csrf.whitelist }}
+  {{- end }}
+  # Marlin Renderer
+  GEOSERVER_DISABLE_MARLIN: {{ .Values.config.marlinRenderer.disabled | toString | lower | quote  }} 
+  {{- if .Values.config.appSchema.propertiesFile }}
+  # AppSchema plugin (GeoSciML, WaterML)
+  GEOSERVER_APPSCHEMA_PROPERTIES_FILE: {{ .Values.config.appSchema.propertiesFile }}
+  {{- end }}
+  # CORS
+  GEOSERVER_CORS_ALLOWED_ORIGINS: {{ join "," .Values.config.cors.allowedOrigins  }}

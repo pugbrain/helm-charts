@@ -66,6 +66,12 @@ spec:
               securityContext:
                 {{- toYaml .Values.services.django.securityContext | nindent 18 }}
               volumeMounts:
+                {{- if .Values.configs.django.settings.override }}
+                - name: local-settings
+                  mountPath: {{ printf "%s/geonode/local_settings.py" $geonodeBaseDir }}
+                  subPath: local_settings.py
+                  readOnly: true
+                {{- end }}
                 {{- with .Values.volumes }}
                 - mountPath: {{ .statics.mountPath }}
                   name: statics
@@ -100,6 +106,11 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}      
           volumes:
+            {{- if .Values.configs.django.settings.override }}
+            - name: local-settings
+              configMap:
+                name: {{ include "geonode.settings-local" . }}
+            {{- end }}
             - name: statics
               persistentVolumeClaim:
                 claimName: {{ include "geonode.statics-pvc" . }}

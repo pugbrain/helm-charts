@@ -32,12 +32,12 @@ spec:
                 name: {{ include "geonode.database-secret" . }}
           image: {{ .Values.services.db.image.repository }}:{{ .Values.services.db.image.tag | default "latest" }}
           imagePullPolicy: {{ .Values.services.db.image.pullPolicy }}
-          livenessProbe:
-            exec:
-              command:
-                - pg_isready
-                - '-U'
-                - {{ .Values.services.db.serverParams.user | quote }}
+          #livenessProbe:
+          #  exec:
+          #    command:
+          #      - pg_isready
+          #      - '-U'
+          #      - {{ .Values.services.db.serverParams.user | quote }}
           name: {{ $dbFullName }}
           securityContext:
             {{- toYaml .Values.services.db.securityContext | nindent 12 }}

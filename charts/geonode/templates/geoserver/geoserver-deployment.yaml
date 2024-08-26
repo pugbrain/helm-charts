@@ -34,12 +34,12 @@ spec:
                 name: {{ include "geonode.main-secret" . }}
             - secretRef:
                 name: {{ include "geonode.database-secret" . }}
-          livenessProbe:
-            tcpSocket:
-              port: http-alt
-            periodSeconds: 10
-            failureThreshold: 3
-            initialDelaySeconds: 30
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: http-alt
+          #   periodSeconds: 10
+          #   failureThreshold: 3
+          #   initialDelaySeconds: 30
           # readinessProbe:
           #   exec:
           #     command:

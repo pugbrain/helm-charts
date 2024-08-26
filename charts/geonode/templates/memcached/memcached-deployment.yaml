@@ -31,11 +31,11 @@ spec:
           image: {{ .Values.services.memcached.image.repository }}:{{ .Values.services.memcached.image.tag | default "latest" }}
           imagePullPolicy: {{ .Values.services.memcached.image.pullPolicy }}
           name: {{ .Values.services.memcached.name }}
-          livenessProbe:
-            tcpSocket:
-              port: memcached
-            periodSeconds: 10
-            failureThreshold: 3
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: memcached
+          #   periodSeconds: 10
+          #   failureThreshold: 3
           # readinessProbe:
           #   exec:
           #     command:

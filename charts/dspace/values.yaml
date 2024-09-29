@@ -12,21 +12,10 @@ serviceAccount:
 
 ingress:
   className: ""
+  host: &host "rigeo-dspace.apps-crc.testing"
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  frontend:
-    host: dspace.apps-crc.testing
-    path: /
-    pathType: ImplementationSpecific
-  backend:
-    host: dspace.apps-crc.testing
-    path: /server
-    pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
 db:
   image:
@@ -54,18 +43,26 @@ backend:
   config:
     name: 'DSpace Started with Helm'
     dir: /dspace
-    # urls:
-    #  server: http://sgb-rigeo-teste.apps-crc.testing/server
-    #  ui: http://sgb-rigeo-teste.apps-crc.testing
+    proxiesTrustedIPRanges: ""
+    server:
+      host: *host
+      path: /server
+      tlsSecretName: ""
+    ui:
+      host: *host
+      path: /
+      tlsSecretName: ""
     db:
-      # url: 'jdbc:postgresql://rigeo-dspace-db1:5432/dspace'
       external: false
       host: ""
       port: 5432
       dbName: dspace
       username: dspace
       password: dspace
-    # solr-server: 
+    jvm:
+      CATALINA_OPTS: "-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+    solr:
+      server: ""
     # proxiesTrustedIPRanges: '172.23.0'
   replicaCount: 1
   autoscaling:

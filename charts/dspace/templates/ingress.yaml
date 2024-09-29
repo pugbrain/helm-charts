@@ -23,54 +23,76 @@ spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
-  {{- if .Values.ingress.tls }}
   tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
+    {{- with .Values.backend.config }}    
+    {{- if .server.tlsSecretName }}
+    - secretName: {{ .server.tlsSecretName }}
+      hosts:
+        - {{ .server.host }}
     {{- end }}
-  {{- end }}  
+    {{- if not (eq .server.tlsSecretName .ui.tlsSecretName) -}}
+    {{- if .ui.tlsSecretName }}
+    - secretName: {{ .ui.tlsSecretName }}
+      hosts:
+        - {{ .ui.host }}
+    {{- end -}}
+    {{- end -}}
+    {{- end }}
   rules:
-    {{- $fullName := (include "dspace.frontendFullname" .) }}
-    {{- with .Values.ingress.frontend }}
-    - host: {{ .host | quote }}
+    {{- $frontFullName := (include "dspace.frontendFullname" .) -}}
+    {{- $backfullName := (include "dspace.backendFullname" .) -}}
+    {{- with .Values.backend.config }}
+    {{- $hostIsEqual := (eq .ui.host .server.host) }}
+    - host: {{ .ui.host | quote }}
       http:
         paths:
-          - path: {{ .path }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
+          - path: {{ .ui.path }}
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}
+                name: {{ $frontFullName }}
                 port:
                   number: 4000
               {{- else }}
-              serviceName: {{ $fullName }}
+              serviceName: {{ $frontFullName }}
               servicePort: 4000
               {{- end }}
-    {{- end }}
-    {{- $fullName := (include "dspace.backendFullname" .) }}
-    {{- with .Values.ingress.backend }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          - path: {{ .path }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
+          {{- if $hostIsEqual }}
+          - path: {{ .server.path }}
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}
+                name: {{ $backfullName }}
                 port:
                   number: 8080
               {{- else }}
-              serviceName: {{ $fullName }}
+              serviceName: {{ $backfullName }}
               servicePort: 8080
               {{- end }}
+          {{ end }}
+    {{- if not $hostIsEqual }}
+    - host: {{ .server.host | quote }}
+      http:
+        paths:
+          - path: {{ .server.path }}
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $backfullName }}
+                port:
+                  number: 8080
+              {{- else }}
+              serviceName: {{ $backfullName }}
+              servicePort: 8080
+              {{- end }}
+    {{- end }}
     {{- end }}

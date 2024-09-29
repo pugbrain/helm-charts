@@ -58,12 +58,13 @@ spec:
             - name: DSPACE_REST_NAMESPACE
               value:  {{ .Values.ingress.backend.path }}
           livenessProbe:
-            tcpSocket:
-              port: frontend-port
-          readinessProbe:
             httpGet:
               path: /home
-              port: frontend-port          
+              port: frontend-port
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 2                      
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
       initContainers:

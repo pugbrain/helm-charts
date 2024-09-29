@@ -77,13 +77,14 @@ spec:
               name: dspace-data
             {{- end }}
           livenessProbe:
-            tcpSocket:
-              port: backend-port
-          # https://wiki.lyrasis.org/pages/viewpage.action?pageId=289079751
-          readinessProbe:
+            # https://wiki.lyrasis.org/pages/viewpage.action?pageId=289079751
             httpGet:
               path: /server/api/core/sites
               port: backend-port
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 2
           # TODO: Move commands before exec tomcat to initContainers
           command: ["/bin/bash"]
           args:

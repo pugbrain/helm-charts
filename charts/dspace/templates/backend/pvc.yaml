@@ -7,10 +7,10 @@ metadata:
     {{- include "dspace.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 spec:
-  accessModes:
-    - ReadWriteOnce
-  volumeMode: Filesystem
   {{- with .Values.backend.pvc }}
+  accessModes:
+    - {{ . accessMode }}
+  volumeMode: Filesystem
   {{- if .className }}
   storageClassName: {{ .className }}
   {{- end }}

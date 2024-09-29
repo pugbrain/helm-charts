@@ -99,9 +99,9 @@ backend:
   affinity: {}
   pvc:
     enabled: true
-    # className: ""
+    className: ""
     size: 1Gi
-    # mountPoint: /dados/rigeo
+    accessMode: ReadWriteOnce
 
 frontend:
   replicaCount: 1

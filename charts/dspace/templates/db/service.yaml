@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "dspace.fullname" . }}-db
+  name: {{ include "dspace.dbFullname" . }}
   labels:
     {{- include "dspace.labels" . | nindent 4 }}
     app.kubernetes.io/component: database

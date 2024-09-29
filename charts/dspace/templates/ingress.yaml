@@ -34,7 +34,7 @@ spec:
     {{- end }}
   {{- end }}  
   rules:
-    {{- $fullName := printf "%s-frontend" (include "dspace.fullname" .) }}
+    {{- $fullName := (include "dspace.frontendFullname" .) }}
     {{- with .Values.ingress.frontend }}
     - host: {{ .host | quote }}
       http:
@@ -54,7 +54,7 @@ spec:
               servicePort: 4000
               {{- end }}
     {{- end }}
-    {{- $fullName := printf "%s-backend" (include "dspace.fullname" .) }}
+    {{- $fullName := (include "dspace.backendFullname" .) }}
     {{- with .Values.ingress.backend }}
     - host: {{ .host | quote }}
       http:

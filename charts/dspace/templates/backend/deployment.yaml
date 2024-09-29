@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dspace.fullname" . }}-backend
+  name: {{ include "dspace.backendFullname" . }}
   labels:
     {{- include "dspace.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend

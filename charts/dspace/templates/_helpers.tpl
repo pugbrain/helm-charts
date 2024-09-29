@@ -60,3 +60,22 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the name of each service
+*/}}
+{{- define "dspace.backendFullname" -}}
+{{- printf "%s-%s" (include "dspace.fullname" .) "backend" -}}
+{{- end }}
+
+{{- define "dspace.frontendFullname" -}}
+{{- printf "%s-%s" (include "dspace.fullname" .) "frontend" -}}
+{{- end }}
+
+{{- define "dspace.solrFullname" -}}
+{{- printf "%s-%s" (include "dspace.fullname" .) "solr" -}}
+{{- end }}
+
+{{- define "dspace.dbFullname" -}}
+{{- printf "%s-%s" (include "dspace.fullname" .) "db" -}}
+{{- end }}

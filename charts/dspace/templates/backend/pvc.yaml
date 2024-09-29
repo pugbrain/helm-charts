@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "dspace.fullname" . }}-backend
+  name: {{ include "dspace.backendFullname" . }}
   labels:
     {{- include "dspace.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 spec:
   {{- with .Values.backend.pvc }}
   accessModes:
-    - {{ . accessMode }}
+    - {{ .accessMode }}
   volumeMode: Filesystem
   {{- if .className }}
   storageClassName: {{ .className }}

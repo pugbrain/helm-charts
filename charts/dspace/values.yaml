@@ -29,9 +29,8 @@ ingress:
   #      - chart-example.local
 
 db:
-  enabled: true
   image:
-    repository: dspace/dspace-postgres-pgcrypto
+    repository: docker.io/dspace/dspace-postgres-pgcrypto
     pullPolicy: IfNotPresent
     tag: ""
   pvc:
@@ -59,7 +58,11 @@ backend:
     #  server: http://sgb-rigeo-teste.apps-crc.testing/server
     #  ui: http://sgb-rigeo-teste.apps-crc.testing
     db:
-      url: 'jdbc:postgresql://rigeo-dspace-db1:5432/dspace'
+      # url: 'jdbc:postgresql://rigeo-dspace-db1:5432/dspace'
+      external: false
+      host: ""
+      port: 5432
+      dbName: dspace
       username: dspace
       password: dspace
     # solr-server: 

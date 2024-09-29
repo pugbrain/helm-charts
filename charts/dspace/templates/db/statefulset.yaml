@@ -1,4 +1,4 @@
-{{- if .Values.db.enabled }}
+{{- if not .Values.backend.config.db.external }}
 {{- $fullName := (include "dspace.dbFullname" .) }}
 apiVersion: apps/v1
 kind: StatefulSet

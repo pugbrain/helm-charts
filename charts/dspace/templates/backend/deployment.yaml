@@ -55,22 +55,15 @@ spec:
               value: {{ printf "http://%s%s" .Values.ingress.frontend.host .Values.ingress.frontend.path }}
             - name: dspace__P__name
               value: {{ .Values.backend.config.name }}
-            - name: db__P__url              
-              value: {{ if .Values.db.enabled }}
-                       {{- printf "jdbc:postgresql://%s-db:%s/dspace" (include "dspace.fullname" .) "5432" -}}
-                     {{- else -}}
-                       {{- .Values.backend.config.db.url -}}
-                     {{- end }}
-            - name: db__P__username
-              value: {{ .Values.backend.config.db.username }}
-            - name: db__P__password
-              value: {{ .Values.backend.config.db.password }}
             - name: solr__P__server
               value: http://{{ include "dspace.fullname" . }}-solr:8983/solr
             # - name: proxies__P__trusted__P__ipranges
             #   value:  {{ .Values.backend.config.proxiesTrustedIPRanges }}
             - name: CATALINA_OPTS
               value: "-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+          envFrom:
+            - secretRef:
+                name: {{ include "dspace.dbFullname" . }}-credentials
           volumeMounts:
             {{- if .Values.backend.pvc.enabled }}
             - mountPath: /dspace/assetstore

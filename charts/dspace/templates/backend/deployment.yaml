@@ -46,27 +46,14 @@ spec:
             - name: backend-port
               containerPort: 8080
               protocol: TCP
-          env:
-            - name: dspace__P__dir
-              value: {{ .Values.backend.config.name }}
-            - name: dspace__P__server__P__url
-              value: {{ printf "http://%s%s" .Values.ingress.backend.host .Values.ingress.backend.path }}
-            - name: dspace__P__ui__P__url
-              value: {{ printf "http://%s%s" .Values.ingress.frontend.host .Values.ingress.frontend.path }}
-            - name: dspace__P__name
-              value: {{ .Values.backend.config.name }}
-            - name: solr__P__server
-              value: http://{{ include "dspace.fullname" . }}-solr:8983/solr
-            # - name: proxies__P__trusted__P__ipranges
-            #   value:  {{ .Values.backend.config.proxiesTrustedIPRanges }}
-            - name: CATALINA_OPTS
-              value: "-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
           envFrom:
+            - configMapRef:
+                name: {{ include "dspace.backendFullname" . }}-configs
             - secretRef:
-                name: {{ include "dspace.dbFullname" . }}-credentials
+                name: {{ include "dspace.backendFullname" . }}-credentials
           volumeMounts:
             {{- if .Values.backend.pvc.enabled }}
-            - mountPath: /dspace/assetstore
+            - mountPath: {{ printf "%s/assetstore" .Values.backend.config.dir }}
               name: dspace-data
             {{- end }}
           livenessProbe:

@@ -17,6 +17,10 @@ spec:
         {{- include "dspace.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: search-engine
     spec:
+      {{- with .Values.solr.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       terminationGracePeriodSeconds: 10
       containers:
         - name: dspace-solr

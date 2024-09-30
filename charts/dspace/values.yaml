@@ -17,6 +17,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
 
+# TODO: Insert imagePullsecrets onde está faltando (db, solr)
 db:
   image:
     repository: docker.io/dspace/dspace-postgres-pgcrypto
@@ -27,7 +28,8 @@ db:
     size: 5Gi
     mountPoint: /pgdata
   securityContext:
-    runAsUser: 0
+    runAsUser: 0  
+  imagePullSecrets: []
 
 solr:
   enabled: true
@@ -37,13 +39,19 @@ solr:
     tag: ""
   pvc:
     # className: ""
-    size: 1Gi
+    size: 1Gi  
+  imagePullSecrets: []
 
 backend:
+  # TODO: Subir o nível da tag config para o mesmo nivel de backend e frontend. 
+  # TODO: Vale a pena chamar backend, frontend, solr, e db de services?
   config:
     name: 'DSpace Started with Helm'
     dir: /dspace
     proxiesTrustedIPRanges: ""
+    # TODO: set https based on tls secret
+    # https://wiki.lyrasis.org/display/DSDOC7x/Installing+DSpace#InstallingDSpace-InstallingtheBackend(ServerAPI)
+    # https://wiki.lyrasis.org/display/DSDOC7x/Installing+DSpace#InstallingDSpace-InstallingtheFrontend(UserInterface)
     server:
       host: *host
       path: /server

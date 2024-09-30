@@ -3,6 +3,34 @@ entries:
   dspace:
   - apiVersion: v2
     appVersion: dspace-7.6.2
+    created: "2024-09-30T16:10:38.085454743Z"
+    description: DSpace is an open source repository application that allows you to
+      capture, store,  index, preserve and distribute your digital material including
+      text, video, audio  and data.  DSpace provides a way to manage your materials
+      and publications in a  professionally maintained repository to give them greater
+      visibility and  accessibility over time.
+    digest: f3ff69e3f08fb94f1cda05a5440da65a9b975751575044acd9bdfc085d2d3136
+    home: https://dspace.lyrasis.org/
+    icon: http://dspace.lyrasis.org/wp-content/uploads/2021/10/DSpace-logo-light.png
+    keywords:
+    - Repository
+    - Catalog
+    - Documents
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+    - email: marcelo.zoel@sgb.gov.br
+      name: Marcelo Zoel
+    name: dspace
+    sources:
+    - https://github.com/DSpace/DSpace
+    - https://github.com/DSpace/dspace-angular
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/dspace-0.2.1/dspace-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: dspace-7.6.2
     created: "2024-09-29T22:12:29.57323463Z"
     description: DSpace is an open source repository application that allows you to
       capture, store,  index, preserve and distribute your digital material including
@@ -707,4 +735,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/nginx-0.1.0/nginx-0.1.0.tgz
     version: 0.1.0
-generated: "2024-09-29T22:12:29.658470273Z"
+generated: "2024-09-30T16:10:38.085519224Z"

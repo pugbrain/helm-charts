@@ -70,7 +70,7 @@ spec:
           args:
             - '-c'
             - |
-              /dspace/bin/dspace database migrate
+              /dspace/bin/dspace database migrate ignored
               catalina.sh run
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}

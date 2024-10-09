@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "dspace.labels" . | nindent 4 }}
 data: 
-  {{- with .Values.backend.config }}
+  {{- with .Values.config }}
   DSPACE_UI_SSL: "false"
   DSPACE_UI_HOST: "0.0.0.0"
   DSPACE_UI_PORT: "4000"

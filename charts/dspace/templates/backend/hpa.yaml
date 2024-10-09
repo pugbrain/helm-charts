@@ -1,6 +1,5 @@
-
 {{- $fullName := (include "dspace.backendFullname" .) }}
-{{- if .Values.backend.autoscaling.enabled }}
+{{- if .Values.services.backend.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -13,7 +12,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: {{ $fullName }}
-  {{- with .Values.backend }}
+  {{- with .Values.services.backend }}
   minReplicas: {{ .autoscaling.minReplicas }}
   maxReplicas: {{ .autoscaling.maxReplicas }}
   metrics:

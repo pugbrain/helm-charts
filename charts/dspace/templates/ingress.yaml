@@ -24,7 +24,7 @@ spec:
   ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
   tls:
-    {{- with .Values.backend.config }}    
+    {{- with .Values.config }}    
     {{- if .server.tlsSecretName }}
     - secretName: {{ .server.tlsSecretName }}
       hosts:
@@ -41,7 +41,7 @@ spec:
   rules:
     {{- $frontFullName := (include "dspace.frontendFullname" .) -}}
     {{- $backfullName := (include "dspace.backendFullname" .) -}}
-    {{- with .Values.backend.config }}
+    {{- with .Values.config }}
     {{- $hostIsEqual := (eq .ui.host .server.host) }}
     - host: {{ .ui.host | quote }}
       http:

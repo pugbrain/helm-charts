@@ -1,4 +1,4 @@
-{{- if not .Values.backend.config.db.external }}
+{{- if not .Values.config.db.external }}
 apiVersion: v1
 kind: Service
 metadata:

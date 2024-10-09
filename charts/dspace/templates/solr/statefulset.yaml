@@ -1,4 +1,4 @@
-{{- if .Values.solr.enabled }}
+{{- if .Values.services.solr.enabled }}
 {{- $fullName := (include "dspace.solrFullname" .) }}
 apiVersion: apps/v1
 kind: StatefulSet
@@ -17,15 +17,16 @@ spec:
         {{- include "dspace.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: search-engine
     spec:
-      {{- with .Values.solr.imagePullSecrets }}
+      {{- with .Values.services.solr.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "dspace.serviceAccountName" . }}
       terminationGracePeriodSeconds: 10
       containers:
         - name: dspace-solr
-          image: "{{ .Values.solr.image.repository }}:{{ .Values.solr.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.solr.image.pullPolicy }}
+          image: "{{ .Values.services.solr.image.repository }}:{{ .Values.services.solr.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.services.solr.image.pullPolicy }}
           workingDir: /var/solr/data
           ports:
             - containerPort: 8983
@@ -54,7 +55,7 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-        {{- with .Values.solr.pvc }}
+        {{- with .Values.services.solr.pvc }}
         {{- if .className }}
         storageClassName: {{ .className }}
         {{- end }}

@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "dspace.labels" . | nindent 4 }}
 data: 
-  {{- with .Values.backend.config }}
+  {{- with .Values.config }}
   dspace__P__dir: {{ .dir }}
   dspace__P__server__P__url: {{ printf "http://%s%s" .server.host .server.path }}
   dspace__P__ui__P__url: {{ printf "http://%s%s" .ui.host .ui.path }}

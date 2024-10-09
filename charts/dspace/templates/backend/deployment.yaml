@@ -6,8 +6,8 @@ metadata:
     {{- include "dspace.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 spec:
-  {{- if not .Values.backend.autoscaling.enabled }}
-  replicas: {{ .Values.backend.replicaCount }}
+  {{- if not .Values.services.backend.autoscaling.enabled }}
+  replicas: {{ .Values.services.backend.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -15,7 +15,7 @@ spec:
       app.kubernetes.io/component: backend
   template:
     metadata:
-      {{- with .Values.backend.podAnnotations }}
+      {{- with .Values.services.backend.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -23,15 +23,15 @@ spec:
         {{- include "dspace.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: backend
     spec:
-      {{- with .Values.backend.imagePullSecrets }}
+      {{- with .Values.services.backend.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "dspace.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.services.backend.podSecurityContext | nindent 8 }}
       volumes:
-        {{- if .Values.backend.pvc.enabled }}
+        {{- if .Values.services.backend.pvc.enabled }}
         - name: dspace-data
           persistentVolumeClaim:
             claimName: {{ include "dspace.fullname" . }}-backend
@@ -39,9 +39,9 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-backend
           securityContext:
-            {{- toYaml .Values.backend.securityContext | nindent 12 }}
-          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+            {{- toYaml .Values.services.backend.securityContext | nindent 12 }}
+          image: "{{ .Values.services.backend.image.repository }}:{{ .Values.services.backend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.services.backend.image.pullPolicy }}
           ports:
             - name: backend-port
               containerPort: 8080
@@ -52,8 +52,8 @@ spec:
             - secretRef:
                 name: {{ include "dspace.backendFullname" . }}-credentials
           volumeMounts:
-            {{- if .Values.backend.pvc.enabled }}
-            - mountPath: {{ printf "%s/assetstore" .Values.backend.config.dir }}
+            {{- if .Values.services.backend.pvc.enabled }}
+            - mountPath: {{ printf "%s/assetstore" .Values.config.dir }}
               name: dspace-data
             {{- end }}
           livenessProbe:
@@ -73,16 +73,16 @@ spec:
               /dspace/bin/dspace database migrate ignored
               catalina.sh run
           resources:
-            {{- toYaml .Values.backend.resources | nindent 12 }}
-      {{- with .Values.backend.nodeSelector }}
+            {{- toYaml .Values.services.backend.resources | nindent 12 }}
+      {{- with .Values.services.backend.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.backend.affinity }}
+      {{- with .Values.services.backend.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.backend.tolerations }}
+      {{- with .Values.services.backend.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

@@ -1,4 +1,4 @@
-{{- if .Values.solr.enabled }}
+{{- if .Values.services.solr.enabled }}
 apiVersion: v1
 kind: Service
 metadata:

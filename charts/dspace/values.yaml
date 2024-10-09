@@ -47,8 +47,6 @@ config:
 
 services:
   backend:
-    # TODO: Subir o nível da tag config para o mesmo nivel de backend e frontend. 
-    # TODO: Vale a pena chamar backend, frontend, solr, e db de services?  
     replicaCount: 1
     autoscaling:
       enabled: false

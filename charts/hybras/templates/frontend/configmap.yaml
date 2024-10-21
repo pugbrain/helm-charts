@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hybras.frontendFullname" . }}-configs
+  labels:
+    {{- include "hybras.labels" . | nindent 4 }}
+data: 
+  {{- with .Values.config }}
+  hybras_UI_SSL: "false"
+  hybras_UI_HOST: "0.0.0.0"
+  hybras_UI_PORT: "8080"
+  hybras_UI_NAMESPACE: {{ .ui.path }}
+  ###hybras_REST_SSL: "false"
+  ###hybras_REST_HOST: {{ .server.host }}
+  ###hybras_REST_PORT: "8080"
+  ###hybras_REST_NAMESPACE: {{ .server.path }}
+  {{- end }}

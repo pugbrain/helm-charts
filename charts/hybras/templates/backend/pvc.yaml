@@ -1,0 +1,21 @@
+{{- if .Values.services.backend.pvc.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "hybras.backendFullname" . }}
+  labels:
+    {{- include "hybras.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  {{- with .Values.services.backend.pvc }}
+  accessModes:
+    - {{ .accessMode }}
+  volumeMode: Filesystem
+  {{- if .className }}
+  storageClassName: {{ .className }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size }}
+  {{- end }}
+{{- end }}

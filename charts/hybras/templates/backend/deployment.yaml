@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hybras.backendFullname" . }}
+  labels:
+    {{- include "hybras.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+### Duvida, não seria enabled e não not enabled?
+  {{- if not .Values.services.backend.autoscaling.enabled }}
+  replicas: {{ .Values.services.backend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "hybras.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      {{- with .Values.services.backend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "hybras.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+    spec:
+      {{- with .Values.services.backend.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "hybras.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.services.backend.podSecurityContext | nindent 8 }}
+      volumes:
+        {{- if .Values.services.backend.pvc.enabled }}
+        - name: hybras-data
+          persistentVolumeClaim:
+            claimName: {{ include "hybras.fullname" . }}-backend
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-backend
+          securityContext:
+            {{- toYaml .Values.services.backend.securityContext | nindent 12 }}
+          image: "{{ .Values.services.backend.image.repository }}:{{ .Values.services.backend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.services.backend.image.pullPolicy }}
+          ports:
+            - name: backend-port
+              containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "hybras.backendFullname" . }}-configs
+            - secretRef:
+                name: {{ include "hybras.backendFullname" . }}-credentials
+          volumeMounts:
+            {{- if .Values.services.backend.pvc.enabled }}
+            - mountPath: {{ printf "%s/assetstore" .Values.config.dir }}
+              name: hybras-data
+            {{- end }}
+          livenessProbe:
+            # https://wiki.lyrasis.org/pages/viewpage.action?pageId=289079751
+            httpGet:
+              path: /server/api/core/sites
+              port: backend-port
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 2
+          # TODO: Move commands before exec tomcat to initContainers
+          command: ["/bin/bash"]
+          args:
+            - '-c'
+            - |
+              /hybras/bin/hybras database migrate ignored
+              catalina.sh run
+          resources:
+            {{- toYaml .Values.services.backend.resources | nindent 12 }}
+      {{- with .Values.services.backend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.backend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.backend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

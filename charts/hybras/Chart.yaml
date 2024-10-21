@@ -1,0 +1,25 @@
+apiVersion: v2
+name: hybras
+version: 0.3.0
+description: |-
+  hybras is an open source repository application that allows you to capture, store, 
+  index, preserve and distribute your digital material including text, video, audio 
+  and data.  hybras provides a way to manage your materials and publications in a 
+  professionally maintained repository to give them greater visibility and 
+  accessibility over time.
+type: application
+keywords:
+  - Repository
+  - Catalog
+  - Documents
+home: https://hybras.lyrasis.org/
+sources:
+  - https://github.com/hybras/hybras
+  - https://github.com/hybras/hybras-angular
+maintainers:
+  - name: Carlos Eduardo Mota
+    email: carlos.mota@sgb.gov.br
+  - name: Marcelo Zoel
+    email: marcelo.zoel@sgb.gov.br
+icon: "http://hybras.lyrasis.org/wp-content/uploads/2021/10/hybras-logo-light.png"
+appVersion: "hybras-7.6.2"

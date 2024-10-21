@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hybras.backendFullname" . }}
+  labels:
+    {{- include "hybras.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: backend-port
+      protocol: TCP
+      name: backend-port-svc
+  selector:
+    {{- include "hybras.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: backend

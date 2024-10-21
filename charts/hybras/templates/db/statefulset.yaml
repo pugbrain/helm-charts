@@ -1,0 +1,63 @@
+{{- if not .Values.config.db.external }}
+{{- $fullName := (include "hybras.dbFullname" .) }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fullName }}
+spec:
+  serviceName: {{ $fullName }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "hybras.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        {{- include "hybras.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      {{- with .Values.services.db.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: {{ include "hybras.serviceAccountName" . }}
+      containers:
+        - name: hybras-db
+          image: "{{ .Values.services.db.image.repository }}:{{ .Values.services.db.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.services.db.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.services.db.securityContext | nindent 12 }}
+          ports:
+            - containerPort: 5432
+              name: db-port
+          volumeMounts:
+            - name: {{ $fullName }}
+              mountPath: /postgres
+          env:
+            - name: PGDATA
+              value: /data
+            - name: POSTGRES_DB
+              value: hybras
+            {{- with .Values.config.db }}
+            - name: POSTGRES_USER
+              value: {{ .username }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .password }}
+            {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ $fullName }}
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- with .Values.services.db.pvc }}
+        {{- if .className }}
+        storageClassName: {{ .className }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .size }}
+        {{- end }}
+{{- end }}

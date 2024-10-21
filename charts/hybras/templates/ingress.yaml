@@ -1,0 +1,98 @@
+{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "hybras.fullname" . }}
+  labels:
+    {{- include "hybras.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  tls:
+    {{- with .Values.config }}    
+    {{- if .server.tlsSecretName }}
+    - secretName: {{ .server.tlsSecretName }}
+      hosts:
+        - {{ .server.host }}
+    {{- end }}
+    {{- if not (eq .server.tlsSecretName .ui.tlsSecretName) -}}
+    {{- if .ui.tlsSecretName }}
+    - secretName: {{ .ui.tlsSecretName }}
+      hosts:
+        - {{ .ui.host }}
+    {{- end -}}
+    {{- end -}}
+    {{- end }}
+  rules:
+    {{- $frontFullName := (include "hybras.frontendFullname" .) -}}
+    {{- $backfullName := (include "hybras.backendFullname" .) -}}
+    {{- with .Values.config }}
+    {{- $hostIsEqual := (eq .ui.host .server.host) }}
+    - host: {{ .ui.host | quote }}
+      http:
+        paths:
+          - path: {{ .ui.path }}
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $frontFullName }}
+                port:
+                  number: 4000
+              {{- else }}
+              serviceName: {{ $frontFullName }}
+              servicePort: 4000
+              {{- end }}
+          {{- if $hostIsEqual }}
+          - path: {{ .server.path }}
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $backfullName }}
+                port:
+                  number: 8080
+              {{- else }}
+              serviceName: {{ $backfullName }}
+              servicePort: 8080
+              {{- end }}
+          {{ end }}
+    {{- if not $hostIsEqual }}
+    - host: {{ .server.host | quote }}
+      http:
+        paths:
+          - path: {{ .server.path }}
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $backfullName }}
+                port:
+                  number: 8080
+              {{- else }}
+              serviceName: {{ $backfullName }}
+              servicePort: 8080
+              {{- end }}
+    {{- end }}
+    {{- end }}

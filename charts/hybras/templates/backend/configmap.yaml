@@ -1,0 +1,19 @@
+###{{- $solrHost := printf "http://%s:8983/solr" (include "hybras.solrFullname" .) -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hybras.backendFullname" . }}-configs
+  labels:
+    {{- include "hybras.labels" . | nindent 4 }}
+data: 
+  {{- with .Values.config }}
+  hybras__P__dir: {{ .dir }}
+  hybras__P__server__P__url: {{ printf "http://%s%s" .server.host .server.path }}
+  hybras__P__ui__P__url: {{ printf "http://%s%s" .ui.host .ui.path }}
+  hybras__P__name: {{ .name }}
+  ###solr__P__server: {{ default .solr.server $solrHost }}
+  {{- if .proxiesTrustedIPRanges -}}
+  proxies__P__trusted__P__ipranges: {{ .proxiesTrustedIPRanges }}
+  {{- end }}
+  CATALINA_OPTS: {{ .jvm.CATALINA_OPTS }}
+  {{- end }}
